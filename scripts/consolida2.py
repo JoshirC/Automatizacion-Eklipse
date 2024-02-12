@@ -57,6 +57,30 @@ def bodega(df_final,name_centro):
         for i in range(len(centros)):
             centros[i].to_excel(writer, sheet_name=name_centro[i], index=False)
     print("---> Archivo de BODEGA creado.")
+
+def modelado_reposicion(df, n_centros):
+    centros = []
+    dn = df[['SEMANA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'CANTIDAD', 'CENTRO', 'MES']]
+    dn = dn.rename(columns={'CANTIDAD': 'RECTIFICACION'})
+    dn = dn.dropna(subset=['RECTIFICACION'])
+    dn = dn.sort_values(by=['DESCRIPCION PRODUCTO'])
+
+    df = df.pivot_table(index=['FAMILIA','COD. PRODUCTO','DESCRIPCION PRODUCTO','UNIDAD'],columns='CENTRO',values='CANTIDAD').reset_index()
+    df = df.sort_values(by=['FAMILIA','DESCRIPCION PRODUCTO'])
+    df['TOTAL'] = df.sum(axis=1)
+
+    with pd.ExcelWriter("C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\1_REPOSICIONES.xlsx") as writer:
+        df.to_excel(writer, sheet_name='Detalle Consolidado', index=False)
+        dn.to_excel(writer, sheet_name='Modelado Estadistico', index=False)
+
+    for i in range(len(n_centros)):
+        dc = df[['FAMILIA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO','UNIDAD',n_centros[i]]].dropna()
+        dc = dc[dc[n_centros[i]] != 0]
+        centros.append(dc)
+    with pd.ExcelWriter("C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\1_BODEGA.xlsx") as writer:
+        for i in range(len(centros)):
+            centros[i].to_excel(writer, sheet_name=n_centros[i], index=False)
+
 def modelado(df, centros, name_centro, n_centros, dlc):
     df['FAMILIA'] = df['FAMILIA'].fillna('X')
     df['COD. PRODUCTO'] = df['COD. PRODUCTO'].fillna('X') 
@@ -144,7 +168,7 @@ def menu():
         if opcion == "1":
             n_centros = []
             dfs = []
-            df = ["C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud mensual LUCES.xlsx"]
+            df = ["C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\EJM Solicitud mensual LUCES.xlsx"]
             print("----- % MODELANDO DATOS % -----")
             for archivo in df:
                 try:
@@ -195,7 +219,27 @@ def menu():
             print("---> Datos modelados exitosamente.")
             df_final = pd.concat(dfs)
             centros, name_centro, dlc = compra_local()
-            modelado(df_final, centros, name_centro, n_centros, dlc)            
+            modelado(df_final, centros, name_centro, n_centros, dlc)     
+        elif opcion == "3":
+            n_centros = []
+            dfs = []
+            df = ["C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\EJM Reposiciones COLBUN.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\EJM Reposiciones LUCES.xlsx"]
+            print("----- % MODELANDO DATOS % -----")
+            for archivo in df:
+                try:
+                    df_producto = pd.read_excel(archivo,dtype={'COD. PRODUCTO': str}, sheet_name='PRODUCTOS')
+                    df_producto = df_producto[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'CANTIDAD', 'CENTRO', 'SEMANA', 'MES']]
+                    dfs.append(df_producto)
+
+                    unico_centro = df_producto['CENTRO'].unique()
+                    valores_sin_corchetes = ', '.join(unico_centro)
+                    n_centros.append(valores_sin_corchetes)
+    
+                except Exception as e:
+                    print("---> Ocurrió un error al leer el archivo:", str(e))
+            print("---> Datos modelados exitosamente.")
+            df_final = pd.concat(dfs)
+            modelado_reposicion(df_final, n_centros)  
         elif opcion == "4":
             print("Saliendo del programa...")
             break
