@@ -29,6 +29,7 @@ def compra_local():
         df['COD. PRODUCTO'] = df['COD. PRODUCTO'].fillna('X')
         df['CANT. TOTAL'].astype(float)
         df = df[df['CANT. TOTAL'] != 0]
+        df.dropna(subset=['CANT. TOTAL'], inplace=True)
         
         dfs.append(df)
 
@@ -74,12 +75,12 @@ def modelado(df, centros, name_centro, n_centros, dlc):
     s_a = pd.concat([g1,g2]).reset_index(drop=True)
 
     df['TOTAL'] = df.sum(axis=1)
-    with pd.ExcelWriter("C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\0_RECTIFICADO.xlsx") as writer:    
-        df.to_excel(writer, sheet_name='Detalle Rectificado', index=False)
+    with pd.ExcelWriter("C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\0_CONSOLIDADO.xlsx") as writer:    
+        df.to_excel(writer, sheet_name='Detalle Consolidado', index=False)
         s_a.to_excel(writer, sheet_name='Pendientes Aprobacion', index=False)
         d_data.to_excel(writer, sheet_name='Modelado Estadistico', index=False)
         for i in range(len(centros)):
-            centros[i].to_excel(writer, sheet_name=name_centro[i], index=False)
+            centros[i].to_excel(writer, sheet_name=('C.L '+name_centro[i]), index=False)
     print("---> Archivo de CONSOLIDADO creado.")
     bodega(df, n_centros)
 
@@ -100,7 +101,7 @@ def modelado_mensual(df, Tipo_Categoria):
     df['SEMANA'] = df[df.columns[4]].name
     df = df.rename(columns={df[df.columns[4]].name: 'RECTIFICACION'})
     df.dropna(subset=['RECTIFICACION'], inplace=True) 
-    #df['RECTIFICACION'].astype(float)
+    df['RECTIFICACION'].astype(float)
     df = df[df['RECTIFICACION'] != 0]
     df['CATEGORIA'] = Tipo_Categoria
     if Tipo_Categoria == 'PRODUCTOS':
