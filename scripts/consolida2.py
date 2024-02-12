@@ -5,7 +5,8 @@ import os
 
 cat_1 = ['ABARROTES','BEBESTIBLES', 'CONFITERIA', 'DESECHABLES', 'EPP', 'MATERIALES DE LIMPIEZA', 'ART ESCRITORIO', 'ART KIOSCO']
 cat_2 = ['AVES', 'CECINAS','CERDO ','FRIZADOS', 'FRUTA Y VERDURA', 'HUEVOS Y LACTEOS', 'PANADERIA', 'PESCADOS Y MARISCOS','VACUNO','PRE-ELABORADOS','PLATOS PREPARADOS','X']
-aguas = ['08854','09065','49615','00142','00152','00153','08855','08938','09007','1325','1326','1327','1328','00154','00155']
+
+#FUNCIONES
 
 def data_frame(df, dcl):
     dlc = dcl[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO','CANT. TOTAL', 'CENTRO', 'MES']]
@@ -94,30 +95,20 @@ def modelado_semanal(df, Tipo_Categoria):
         df['SITUACION'] = '--------'
     return df
 
-#def modelado_mensual(df, Tipo_Categoria):
-#    try:
-#        df = df.drop(['Unnamed: 0'], axis=1) 
-#        df = df.dropna(subset=['CENTRO']) 
-#        df = df.melt(id_vars=['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'PRECIO $', 'CENTRO'], 
-#                    value_vars=['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4', 'Semana 5'], 
-#                    var_name='SEMANA', 
-#                    value_name='CANTIDAD')
-#        df = df[['SEMANA', 'FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'PRECIO $', 'CENTRO', 'CANTIDAD']]
-#        df.dropna(subset=['CANTIDAD'], inplace=True) 
-#        df['CANTIDAD'] = df['CANTIDAD'].astype(int)
-#        df = df[df['CANTIDAD'] != 0]
-
-#        df['CATEGORIA'] = Tipo_Categoria
-
-#        if Tipo_Categoria == 'PRODUCTOS':
-#            df['SITUACION'] = 'APROBADO'
-#        else:
-#            df['SITUACION'] = '--------'
-#
-#       return df
-#    except Exception as e:
-#        print("---> Ocurrió un error al modelar el archivo:", str(e))
-#        return None
+def modelado_mensual(df, Tipo_Categoria):
+    df = df[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD',df.columns[5], 'CENTRO', 'MES']]
+    df['SEMANA'] = df[df.columns[4]].name
+    df = df.rename(columns={df[df.columns[4]].name: 'RECTIFICACION'})
+    df.dropna(subset=['RECTIFICACION'], inplace=True) 
+    #df['RECTIFICACION'].astype(float)
+    df = df[df['RECTIFICACION'] != 0]
+    df['CATEGORIA'] = Tipo_Categoria
+    if Tipo_Categoria == 'PRODUCTOS':
+        df['SITUACION'] = 'APROBADO'
+    else:
+        df['SITUACION'] = '--------'
+    print(df)
+    return df
 '''    
 def exportar(df):
     print("----- EXPORTANDO DATOS -----")
@@ -132,61 +123,66 @@ def exportar(df):
         print("---> Archivo exportado exitosamente.")
     except Exception as e:
         print("---> Ocurrió un error al exportar el archivo:", str(e))
-        return None
-'''
+
 def buscar_archivo():
     dfs = ["C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal COLBUN.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal INCA.xlsx", "C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal LUCES.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal PACHON.xlsx", "C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal PUCOBRE.xlsx", "C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal RIO BLANCO.xlsx", "C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal ROCAS.xlsx", "C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal TOLOLO.xlsx" ]
-    #dfs = []
-    #print("----- CARGAR ARCHIVO -----")
-    #print("Ingrese la cantidad de archivos a cargar: ")
-    #cantidad = int(input())
-    #for i in range(cantidad):
-    #    print("Ingrese la ruta del archivo Excel: ")
-    #    ruta = input()
-    #    try:
-    #        dfs.append(ruta)
-    #        print("---> Archivo cargado exitosamente.")
-    #    except FileNotFoundError:
-    #        print("---> No se encontró el archivo.")
-    #        return None
-    #    except Exception as e:
-    #        print("---> Ocurrió un error al cargar el archivo:", str(e))
-    #        return None
+    dfs = []
+    print("----- CARGAR ARCHIVO -----")
+    print("Ingrese la cantidad de archivos a cargar: ")
+    cantidad = int(input())
+    for i in range(cantidad):
+        print("Ingrese la ruta del archivo Excel: ")
+        ruta = input()
+        try:
+            dfs.append(ruta)
+            print("---> Archivo cargado exitosamente.")
+        except FileNotFoundError:
+            print("---> No se encontró el archivo.")
+            return None
+        except Exception as e:
+            print("---> Ocurrió un error al cargar el archivo:", str(e))
+            return None
     return dfs
+'''
 def menu():
     while True:
         print("----- MENÚ ------\n1.Consolidado Mensual\n2.Consolidado Semanal\n3.Salir")
         opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
-            '''
+            n_centros = []
             dfs = []
-            df = buscar_archivo()
+            df = ["C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud mensual LUCES.xlsx"]
             print("----- % MODELANDO DATOS % -----")
             for archivo in df:
                 try:
                     df_producto = pd.read_excel(archivo,dtype={'COD. PRODUCTO': str}, sheet_name='PRODUCTOS')
-                    #df_producto = modelado_mensual(df_producto, 'PRODUCTOS')
+                    df_producto = modelado_mensual(df_producto, 'PRODUCTOS')
                     dfs.append(df_producto)
 
                     df_especial = pd.read_excel(archivo,dtype={'COD. PRODUCTO': str}, sheet_name='ESPECIALES')
-                    #df_especial = modelado_mensual(df_especial, 'ESPECIALES')
+                    df_especial = modelado_mensual(df_especial, 'ESPECIALES')
                     dfs.append(df_especial)
 
-                    df_final = pd.concat(dfs)
-                    print("---> Datos modelados exitosamente.")
-                    exportar(df_final)
+                    unico_centro = df_producto['CENTRO'].unique()
+                    print(unico_centro)
+                    valores_sin_corchetes = ', '.join(unico_centro)
+                    print(valores_sin_corchetes)
+                    n_centros.append(valores_sin_corchetes)
+                    print(n_centros)
 
+                    print("---> Datos modelados exitosamente.")
                 except Exception as e:
                     print("---> Ocurrió un error al leer el archivo:", str(e))
                 
-                # Falta agregar los implementos
-        '''
-            print("Opción no disponible.")
+            df_final = pd.concat(dfs)
+            centros, name_centro, dlc = compra_local()
+            modelado(df_final, centros, name_centro, n_centros, dlc)  
+        
         elif opcion == "2":
             n_centros = []
             dfs = []
-            df = buscar_archivo()
+            df = ["C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal COLBUN.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal INCA.xlsx", "C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal LUCES.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal PACHON.xlsx", "C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal PUCOBRE.xlsx", "C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal RIO BLANCO.xlsx", "C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal ROCAS.xlsx", "C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal TOLOLO.xlsx" ]
             print("----- % MODELANDO DATOS % -----")
             for archivo in df:
                 try:
