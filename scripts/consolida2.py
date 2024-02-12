@@ -47,7 +47,7 @@ def compra_local():
 def bodega(df_final,name_centro):
     centros = []
     for i in range(len(name_centro)):
-        dc = df_final[['FAMILIA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO','UNIDAD','SITUACION',name_centro[i]]].dropna()
+        dc = df_final[['FAMILIA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO','UNIDAD','CATEGORIA',name_centro[i]]].dropna()
         dc = dc[dc[name_centro[i]] != 0]
         if name_centro[i] != 'TOLOLO' and name_centro[i] != 'PACHON':
             dc = dc[dc['FAMILIA'] != 'FRUTA Y VERDURA']
@@ -61,8 +61,8 @@ def modelado(df, centros, name_centro, n_centros, dlc):
     df['FAMILIA'] = df['FAMILIA'].fillna('X')
     df['COD. PRODUCTO'] = df['COD. PRODUCTO'].fillna('X') 
     d_data = data_frame(df, dlc)
-    df = df.pivot_table(index=['FAMILIA','COD. PRODUCTO','DESCRIPCION PRODUCTO','UNIDAD','SITUACION'],columns='CENTRO',values='RECTIFICACION').reset_index()
-    s_a = df[df['SITUACION'] != 'APROBADO'].reset_index(drop=True)
+    df = df.pivot_table(index=['FAMILIA','COD. PRODUCTO','DESCRIPCION PRODUCTO','UNIDAD','CATEGORIA'],columns='CENTRO',values='RECTIFICACION').reset_index()
+    s_a = df[df['CATEGORIA'] != 'PRODUCTOS'].reset_index(drop=True)
 
     df = df.sort_values(by=['FAMILIA','DESCRIPCION PRODUCTO'])
     g1 = df[df['FAMILIA'].isin(cat_1)]
@@ -90,10 +90,6 @@ def modelado_semanal(df, Tipo_Categoria):
     df['RECTIFICACION'].astype(float)
     df = df[df['RECTIFICACION'] != 0]
     df['CATEGORIA'] = Tipo_Categoria
-    if Tipo_Categoria == 'PRODUCTOS':
-        df['SITUACION'] = 'APROBADO'
-    else:
-        df['SITUACION'] = '--------'
     return df
 
 def modelado_mensual(df, Tipo_Categoria):
@@ -104,11 +100,6 @@ def modelado_mensual(df, Tipo_Categoria):
     df['RECTIFICACION'].astype(float)
     df = df[df['RECTIFICACION'] != 0]
     df['CATEGORIA'] = Tipo_Categoria
-    if Tipo_Categoria == 'PRODUCTOS':
-        df['SITUACION'] = 'APROBADO'
-    else:
-        df['SITUACION'] = '--------'
-    print(df)
     return df
 '''    
 def exportar(df):
@@ -147,7 +138,7 @@ def buscar_archivo():
 '''
 def menu():
     while True:
-        print("----- MENÚ ------\n1.Consolidado Mensual\n2.Consolidado Semanal\n3.Salir")
+        print("----- MENÚ ------\n1.Consolidado Mensual\n2.Consolidado Semanal\n3.Reposiciones\n4.Salir")
         opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
@@ -199,19 +190,13 @@ def menu():
                     df_especial = pd.read_excel(archivo,dtype={'COD. PRODUCTO': str}, sheet_name='ESPECIALES')
                     df_especial = modelado_semanal(df_especial, 'ESPECIALES')
                     dfs.append(df_especial)
-
-                    #df_implemento = pd.read_excel(archivo,dtype={'COD. PRODUCTO': str}, sheet_name='IMPLEMENTOS')
-                    #df_implemento = modelado_semanal(df_implemento, 'IMPLEMENTOS')
-                    #dfs.append(df_implemento)
-                    
-                    #exportar(df_final)
                 except Exception as e:
                     print("---> Ocurrió un error al leer el archivo:", str(e))
             print("---> Datos modelados exitosamente.")
             df_final = pd.concat(dfs)
             centros, name_centro, dlc = compra_local()
             modelado(df_final, centros, name_centro, n_centros, dlc)            
-        elif opcion == "3":
+        elif opcion == "4":
             print("Saliendo del programa...")
             break
         else:
