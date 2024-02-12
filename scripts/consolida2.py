@@ -7,6 +7,15 @@ cat_1 = ['ABARROTES','BEBESTIBLES', 'CONFITERIA', 'DESECHABLES', 'EPP', 'MATERIA
 cat_2 = ['AVES', 'CECINAS','CERDO ','FRIZADOS', 'FRUTA Y VERDURA', 'HUEVOS Y LACTEOS', 'PANADERIA', 'PESCADOS Y MARISCOS','VACUNO','PRE-ELABORADOS','PLATOS PREPARADOS','X']
 aguas = ['08854','09065','49615','00142','00152','00153','08855','08938','09007','1325','1326','1327','1328','00154','00155']
 
+def data_frame(df, dcl):
+    dlc = dcl[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO','CANT. TOTAL', 'CENTRO', 'MES']]
+    dlc = dlc.rename(columns={'CANT. TOTAL': 'RECTIFICACION'})
+    df = df[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'RECTIFICACION', 'CENTRO', 'MES']]
+    df = pd.concat([df,dlc])
+    df.sort_values('DESCRIPCION PRODUCTO', inplace=True)
+    df.dropna(subset=['RECTIFICACION'], inplace=True)
+    
+    return df
 def compra_local():
     archivos = ["C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Compra local COLBUN.xlsx", "C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Compra local INCA.xlsx", "C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Compra local LUCES.xlsx", "C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Compra local PUCOBRE.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Compra local RIO BLANCO.xlsx", "C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Compra local ROCAS.xlsx" ]
     centros = []
@@ -14,7 +23,7 @@ def compra_local():
     dfs = []
     for archivo in archivos:
         df = pd.read_excel(archivo,dtype={'COD. PRODUCTO': str}, sheet_name='PRODUCTOS')
-        df = df[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'CANT. TOTAL', 'CENTRO', 'SEMANA']]
+        df = df[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'CANT. TOTAL', 'CENTRO', 'SEMANA','MES']]
         df['FAMILIA'] = df['FAMILIA'].fillna('X')
         df['COD. PRODUCTO'] = df['COD. PRODUCTO'].fillna('X')
         df['CANT. TOTAL'].astype(float)
@@ -26,13 +35,13 @@ def compra_local():
         valores_sin_corchetes = ', '.join(unico)
         name_centro.append(valores_sin_corchetes)
 
-    dff = pd.concat(dfs)
-    dff = dff.sort_values(by=['FAMILIA','DESCRIPCION PRODUCTO'])
+    dlc = pd.concat(dfs)
+    dff = dlc.sort_values(by=['FAMILIA','DESCRIPCION PRODUCTO'])
     for i in range(len(name_centro)):
         dc = dff[dff['CENTRO'] == name_centro[i]]
         dc = dc[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'CANT. TOTAL']]
         centros.append(dc)
-    return centros, name_centro
+    return centros, name_centro, dlc
 def bodega(df_final,name_centro):
     centros = []
     for i in range(len(name_centro)):
@@ -46,9 +55,10 @@ def bodega(df_final,name_centro):
         for i in range(len(centros)):
             centros[i].to_excel(writer, sheet_name=name_centro[i], index=False)
     print("---> Archivo de BODEGA creado.")
-def modelado(df, centros, name_centro, n_centros):
+def modelado(df, centros, name_centro, n_centros, dlc):
     df['FAMILIA'] = df['FAMILIA'].fillna('X')
-    df['COD. PRODUCTO'] = df['COD. PRODUCTO'].fillna('X')   
+    df['COD. PRODUCTO'] = df['COD. PRODUCTO'].fillna('X') 
+    d_data = data_frame(df, dlc)
     df = df.pivot_table(index=['FAMILIA','COD. PRODUCTO','DESCRIPCION PRODUCTO','UNIDAD','SITUACION'],columns='CENTRO',values='RECTIFICACION').reset_index()
     s_a = df[df['SITUACION'] != 'APROBADO'].reset_index(drop=True)
 
@@ -66,13 +76,14 @@ def modelado(df, centros, name_centro, n_centros):
     with pd.ExcelWriter("C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\0_RECTIFICADO.xlsx") as writer:    
         df.to_excel(writer, sheet_name='Detalle Rectificado', index=False)
         s_a.to_excel(writer, sheet_name='Pendientes Aprobacion', index=False)
+        d_data.to_excel(writer, sheet_name='Modelado Estadistico', index=False)
         for i in range(len(centros)):
             centros[i].to_excel(writer, sheet_name=name_centro[i], index=False)
     print("---> Archivo de CONSOLIDADO creado.")
     bodega(df, n_centros)
 
 def modelado_semanal(df, Tipo_Categoria): 
-    df = df[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'RECTIFICACION', 'CENTRO', 'SEMANA']]
+    df = df[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'RECTIFICACION', 'CENTRO', 'SEMANA', 'MES']]
     df.dropna(subset=['RECTIFICACION'], inplace=True) 
     df['RECTIFICACION'].astype(float)
     df = df[df['RECTIFICACION'] != 0]
@@ -107,7 +118,7 @@ def modelado_semanal(df, Tipo_Categoria):
 #    except Exception as e:
 #        print("---> Ocurrió un error al modelar el archivo:", str(e))
 #        return None
-    
+'''    
 def exportar(df):
     print("----- EXPORTANDO DATOS -----")
     try:
@@ -122,6 +133,7 @@ def exportar(df):
     except Exception as e:
         print("---> Ocurrió un error al exportar el archivo:", str(e))
         return None
+'''
 def buscar_archivo():
     dfs = ["C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal COLBUN.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal INCA.xlsx", "C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal LUCES.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal PACHON.xlsx", "C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal PUCOBRE.xlsx", "C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal RIO BLANCO.xlsx", "C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal ROCAS.xlsx", "C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\Solicitud semanal TOLOLO.xlsx" ]
     #dfs = []
@@ -147,6 +159,7 @@ def menu():
         opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
+            '''
             dfs = []
             df = buscar_archivo()
             print("----- % MODELANDO DATOS % -----")
@@ -168,6 +181,8 @@ def menu():
                     print("---> Ocurrió un error al leer el archivo:", str(e))
                 
                 # Falta agregar los implementos
+        '''
+            print("Opción no disponible.")
         elif opcion == "2":
             n_centros = []
             dfs = []
@@ -179,9 +194,6 @@ def menu():
                     
                     df_producto = modelado_semanal(df_producto, 'PRODUCTOS')
                     dfs.append(df_producto)
-
-                    unico_familia = df_producto['FAMILIA'].unique()
-                    #print(unico_familia)
 
                     unico_centro = df_producto['CENTRO'].unique()
                     valores_sin_corchetes = ', '.join(unico_centro)
@@ -200,8 +212,8 @@ def menu():
                     print("---> Ocurrió un error al leer el archivo:", str(e))
             print("---> Datos modelados exitosamente.")
             df_final = pd.concat(dfs)
-            centros, name_centro = compra_local()
-            modelado(df_final, centros, name_centro, n_centros)            
+            centros, name_centro, dlc = compra_local()
+            modelado(df_final, centros, name_centro, n_centros, dlc)            
         elif opcion == "3":
             print("Saliendo del programa...")
             break
