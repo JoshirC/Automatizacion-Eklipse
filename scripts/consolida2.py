@@ -4,7 +4,7 @@ import os
 #VARIABLES GLOBALES
 
 cat_1 = ['ABARROTES','BEBESTIBLES', 'CONFITERIA', 'DESECHABLES', 'EPP', 'MATERIALES DE LIMPIEZA', 'ART ESCRITORIO', 'ART KIOSCO']
-cat_2 = ['AVES', 'CECINAS','CERDO ','FRIZADOS', 'FRUTA Y VERDURA', 'HUEVOS Y LACTEOS', 'PANADERIA', 'PESCADOS Y MARISCOS','VACUNO','PRE-ELABORADOS','PLATOS PREPARADOS','X']
+cat_2 = ['AVES', 'CECINAS','CERDO','FRIZADOS', 'FRUTA Y VERDURA', 'HUEVOS Y LACTEOS', 'PANADERIA', 'PESCADOS Y MARISCOS','VACUNO','PRE-ELABORADOS','PLATOS PREPARADOS','X']
 
 #FUNCIONES
 
@@ -60,6 +60,8 @@ def bodega(df_final,name_centro):
 
 def modelado_reposicion(df, n_centros):
     centros = []
+    df['FAMILIA'] = df['FAMILIA'].fillna('X')
+    df['COD. PRODUCTO'] = df['COD. PRODUCTO'].fillna('X')
     dn = df[['SEMANA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'CANTIDAD', 'CENTRO', 'MES']]
     dn = dn.rename(columns={'CANTIDAD': 'RECTIFICACION'})
     dn = dn.dropna(subset=['RECTIFICACION'])
