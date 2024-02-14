@@ -10,8 +10,9 @@ cat_2 = ['AVES', 'CECINAS','CERDO ','FRIZADOS', 'FRUTA Y VERDURA', 'HUEVOS Y LAC
 def data_frame(df, dcl):
     dlc = dcl[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO','CANT. TOTAL', 'CENTRO', 'MES']]
     dlc['SALIDA'] = "LOCAL"
+    dlc['CATEGORIA'] = "NN"
     dlc = dlc.rename(columns={'CANT. TOTAL': 'RECTIFICACION'})
-    df = df[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'RECTIFICACION', 'CENTRO', 'MES']]
+    df = df[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'RECTIFICACION', 'CENTRO', 'MES', 'CATEGORIA']]
     df['SALIDA'] = "BODEGA"
     df = pd.concat([df,dlc])
     df.sort_values('DESCRIPCION PRODUCTO', inplace=True)
