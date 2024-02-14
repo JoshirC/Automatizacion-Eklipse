@@ -69,7 +69,9 @@ def modelado_reposicion(df, n_centros):
 
     df = df.pivot_table(index=['FAMILIA','COD. PRODUCTO','DESCRIPCION PRODUCTO','UNIDAD'],columns='CENTRO',values='CANTIDAD').reset_index()
     df = df.sort_values(by=['FAMILIA','DESCRIPCION PRODUCTO'])
-    df['TOTAL'] = df.sum(axis=1)
+
+    df_T = df.drop(columns=['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD'])
+    df["TOTAL"] = df_T.sum(axis=1)
 
     with pd.ExcelWriter("C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\1_REPOSICIONES.xlsx") as writer:
         df.to_excel(writer, sheet_name='Detalle Consolidado', index=False)
@@ -98,7 +100,10 @@ def modelado(df, centros, name_centro, n_centros, dlc):
     g2 = s_a[s_a['FAMILIA'].isin(cat_2)]
 
     s_a = pd.concat([g1,g2]).reset_index(drop=True)
-    df['TOTAL'] = df.sum(axis=1)
+    #La funcion sum no omite los strings, por lo que se debe eliminar las columnas que no son numericas
+    df_T = df.drop(columns=['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'CATEGORIA'])
+    df["TOTAL"] = df_T.sum(axis=1)
+
     with pd.ExcelWriter("C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Archivos Base\\26 - 03 feb\\0_CONSOLIDADO.xlsx") as writer:    
         df.to_excel(writer, sheet_name='Detalle Consolidado', index=False)
         s_a.to_excel(writer, sheet_name='Pendientes Aprobacion', index=False)
