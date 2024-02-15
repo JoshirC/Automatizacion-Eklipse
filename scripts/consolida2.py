@@ -7,6 +7,10 @@ cat_2 = ['AVES', 'CECINAS','CERDO ','FRIZADOS', 'FRUTA Y VERDURA', 'HUEVOS Y LAC
 
 #FUNCIONES
 
+'''
+Función que permite modelar los datos obtenidos de los archivos de excel, para luego obtener estadisticas sobre estos mismos.
+
+'''
 def data_frame(df, dcl):
     dlc = dcl[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO','CANT. TOTAL', 'CENTRO', 'MES']]
     dlc['SALIDA'] = "LOCAL"
@@ -19,6 +23,10 @@ def data_frame(df, dcl):
     df.dropna(subset=['RECTIFICACION'], inplace=True)
     
     return df
+'''
+Función que permite leer los archivos de compra local y los transforma según el modelo indicado.
+
+'''
 def compra_local():
     archivos = ["C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Archivos Base\\26 - 03 feb\\Compra Local RIO BLANCO.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Archivos Base\\26 - 03 feb\\Compra Local CHACABUCO.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Archivos Base\\26 - 03 feb\\Compra Local COLBUN.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Archivos Base\\26 - 03 feb\\Compra Local INCA.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Archivos Base\\26 - 03 feb\\Compra Local LUCES.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Archivos Base\\26 - 03 feb\\Compra Local PUCOBRE.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Archivos Base\\26 - 03 feb\\Compra Local ROCAS.xlsx"]
     centros = []
@@ -46,6 +54,10 @@ def compra_local():
         dc = dc[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'CANT. TOTAL']]
         centros.append(dc)
     return centros, name_centro, dlc
+'''
+Función que permite modelar los datos para procesar las solicitudes de envio en bodega.
+
+'''
 def bodega(df_final,name_centro):
     centros = []
     for i in range(len(name_centro)):
@@ -59,6 +71,10 @@ def bodega(df_final,name_centro):
         for i in range(len(centros)):
             centros[i].to_excel(writer, sheet_name=name_centro[i], index=False)
     print("---> Archivo de BODEGA creado.")
+'''
+Función que permite modelar los datos para procesar las solicitudes de reposicion.
+
+'''
 def modelado_reposicion(df, n_centros):
     centros = []
     df['FAMILIA'] = df['FAMILIA'].fillna('X')
@@ -85,6 +101,10 @@ def modelado_reposicion(df, n_centros):
     with pd.ExcelWriter("C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\1_BODEGA.xlsx") as writer:
         for i in range(len(centros)):
             centros[i].to_excel(writer, sheet_name=n_centros[i], index=False)
+'''
+Función que permite modelar los datos para procesar las solicitudes de compra.
+
+'''
 def modelado(df, centros, name_centro, n_centros, dlc):
     df['FAMILIA'] = df['FAMILIA'].fillna('X')
     df['COD. PRODUCTO'] = df['COD. PRODUCTO'].fillna('X') 
@@ -113,6 +133,10 @@ def modelado(df, centros, name_centro, n_centros, dlc):
             centros[i].to_excel(writer, sheet_name=('C.L '+name_centro[i]), index=False)
     print("---> Archivo de CONSOLIDADO creado.")
     bodega(df, n_centros)
+'''
+Función que permite leer los archivos de compra local y los transforma según el modelo indicado.
+
+'''
 def modelado_semanal(df, Tipo_Categoria): 
     df = df[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'RECTIFICACION', 'CENTRO', 'SEMANA', 'MES']]
     df.dropna(subset=['RECTIFICACION'], inplace=True) 
@@ -129,11 +153,14 @@ def modelado_mensual(df, Tipo_Categoria):
     df = df[df['RECTIFICACION'] != 0]
     df['CATEGORIA'] = Tipo_Categoria
     return df
+'''
+Función principal que administra el script y carga los archivos según la opción solicitada.
+
+'''
 def menu():
     while True:
         print("----- MENÚ ------\n1.Consolidado Mensual\n2.Consolidado Semanal\n3.Reposiciones\n4.Salir")
         opcion = input("Seleccione una opción: ")
-
         if opcion == "1":
             n_centros = []
             dfs = []
@@ -163,7 +190,6 @@ def menu():
             df_final = pd.concat(dfs)
             centros, name_centro, dlc = compra_local()
             modelado(df_final, centros, name_centro, n_centros, dlc)  
-        
         elif opcion == "2":
             n_centros = []
             dfs = []
@@ -214,5 +240,4 @@ def menu():
             break
         else:
             print("Opción inválida. Por favor, seleccione una opción válida.")
-
 menu()
