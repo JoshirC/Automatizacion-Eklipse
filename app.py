@@ -1,5 +1,20 @@
-from ventanas.ventana_principal import VentanaPrincipal
+import flet as ft
 
-app = VentanaPrincipal()
+from menu import Menu
+def main(page: ft.Page):
+    page.title = "EKLIPSE"
+    page.window_width = 1000
+    page.window_height = 600
+    page.window_resizable = False
+    page.window_maximizable = False
+    page.padding = 0
+    page.theme_mode = ft.ThemeMode.LIGHT
+    page.update()
 
-app.mainloop()
+    menu = Menu()
+    # add application's root control to the page
+    page.add(
+        menu,
+        ) 
+
+ft.app(target=main)
