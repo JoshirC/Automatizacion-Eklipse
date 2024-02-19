@@ -1,10 +1,10 @@
 import flet as ft
 import pandas as pd
 
-class Consolidado(ft.Container):
+class Mensual(ft.Container):
     def __init__(self):
         super().__init__(
-            width=650, 
+            width=750, 
             height=600, 
-            bgcolor=ft.colors.BLACK,
+            bgcolor=ft.colors.GREEN,
         )
