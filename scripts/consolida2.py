@@ -28,7 +28,7 @@ Función que permite leer los archivos de compra local y los transforma según e
 
 '''
 def compra_local():
-    archivos = ["C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Archivos Base\\26 - 03 feb\\Compra Local RIO BLANCO.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Archivos Base\\26 - 03 feb\\Compra Local CHACABUCO.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Archivos Base\\26 - 03 feb\\Compra Local COLBUN.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Archivos Base\\26 - 03 feb\\Compra Local INCA.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Archivos Base\\26 - 03 feb\\Compra Local LUCES.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Archivos Base\\26 - 03 feb\\Compra Local PUCOBRE.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Archivos Base\\26 - 03 feb\\Compra Local ROCAS.xlsx"]
+    archivos = ["C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\Compra local - Colbun v2.xlsx"]
     centros = []
     name_centro = []
     dfs = []
@@ -40,12 +40,15 @@ def compra_local():
         df['CANT. TOTAL'].astype(float)
         df = df[df['CANT. TOTAL'] != 0]
         df.dropna(subset=['CANT. TOTAL'], inplace=True)
-        
+
+        print(df)
+        unico_centro = df['CENTRO'].unique()
+        valores_sin_corchetes = ', '.join(unico_centro)
+        name_centro.append(valores_sin_corchetes)
+
         dfs.append(df)
 
-        unico = df['CENTRO'].unique()
-        valores_sin_corchetes = ', '.join(unico)
-        name_centro.append(valores_sin_corchetes)
+        
 
     dlc = pd.concat(dfs)
     dff = dlc.sort_values(by=['FAMILIA','DESCRIPCION PRODUCTO'])
@@ -67,7 +70,7 @@ def bodega(df_final,name_centro):
             dc = dc[dc['FAMILIA'] != 'FRUTA Y VERDURA']
         centros.append(dc)
     
-    with pd.ExcelWriter("C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Archivos Base\\26 - 03 feb\\0_BODEGA.xlsx") as writer:
+    with pd.ExcelWriter("C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\0_BODEGA.xlsx") as writer:
         for i in range(len(centros)):
             centros[i].to_excel(writer, sheet_name=name_centro[i], index=False)
     print("---> Archivo de BODEGA creado.")
@@ -125,7 +128,7 @@ def modelado(df, centros, name_centro, n_centros, dlc):
     df_T = df.drop(columns=['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'CATEGORIA'])
     df["TOTAL"] = df_T.sum(axis=1)
 
-    with pd.ExcelWriter("C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Archivos Base\\26 - 03 feb\\0_CONSOLIDADO.xlsx") as writer:    
+    with pd.ExcelWriter("C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\0_CONSOLIDADO.xlsx") as writer:    
         df.to_excel(writer, sheet_name='Detalle Consolidado', index=False)
         s_a.to_excel(writer, sheet_name='Pendientes Aprobacion', index=False)
         d_data.to_excel(writer, sheet_name='Modelado Estadistico', index=False)
@@ -164,7 +167,7 @@ def menu():
         if opcion == "1":
             n_centros = []
             dfs = []
-            df = ["C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\EJM Solicitud mensual LUCES.xlsx"]
+            df = ["C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\Solicitud Mensual - Colbun.xlsx"]
             print("----- % MODELANDO DATOS % -----")
             for archivo in df:
                 try:
@@ -177,11 +180,8 @@ def menu():
                     dfs.append(df_especial)
 
                     unico_centro = df_producto['CENTRO'].unique()
-                    print(unico_centro)
                     valores_sin_corchetes = ', '.join(unico_centro)
-                    print(valores_sin_corchetes)
                     n_centros.append(valores_sin_corchetes)
-                    print(n_centros)
 
                     print("---> Datos modelados exitosamente.")
                 except Exception as e:
