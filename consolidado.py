@@ -2,6 +2,12 @@ import flet as ft
 import pandas as pd
 
 class Consolidado(ft.Container):
+    cadena_texto_semanal = ft.Text("")
+    cadena_texto_local = ft.Text("")
+
+    txt_consolidado = ft.TextField(label="Ingrese la ruta de los archivos", multiline=True, bgcolor=ft.colors.WHITE)
+    txt_compra_local = ft.TextField(label="Ingrese la ruta de los archivos", multiline=True, bgcolor=ft.colors.WHITE,)
+
     def __init__(self):
         super().__init__(
             width=750, 
@@ -26,21 +32,14 @@ class Consolidado(ft.Container):
                                 ft.Text("Rectificado Semanal", size=20),
                                 ft.Container( #Contenedor para mostrar archivos cargados (scroll ?)
                                     width=300,
-                                    height=290,
+                                    height=350,
                                     #bgcolor=ft.colors.WHITE,
-                                    border_radius=12
+                                    border_radius=12,
+                                    padding=5,
+                                    content= self.txt_consolidado
                                 ),
-                                ft.Container(
-                                    content=ft.Icon("ADD", size=30, color=ft.colors.WHITE),
-                                    padding=10,
-                                    alignment=ft.alignment.center,
-                                    bgcolor='#FF8412',
-                                    width=50,
-                                    height=50,
-                                    border_radius=100,
-                                    on_click=lambda e: print("Clickable with Ink clicked!"),
-                                 ),
                             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+
                          ),
                         ft.Container( #Contenedor para archivo local
                             width=342,
@@ -52,19 +51,11 @@ class Consolidado(ft.Container):
                                 ft.Text("Compra Local", size=20),
                                 ft.Container(
                                     width=300,
-                                    height=290,
+                                    height=350,
                                     #bgcolor=ft.colors.WHITE,
-                                    border_radius=12
-                                ),
-                                ft.Container(
-                                    content=ft.Icon("ADD", size=30, color=ft.colors.WHITE),
-                                    padding=10,
-                                    alignment=ft.alignment.center,
-                                    bgcolor='#FF8412',
-                                    width=50,
-                                    height=50,
-                                    border_radius=100,
-                                    on_click=lambda e: print("Clickable with Ink clicked!"),
+                                    border_radius=12,
+                                    padding=5,
+                                    content= self.txt_compra_local
                                 ),
                             ],alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                         )
@@ -79,7 +70,20 @@ class Consolidado(ft.Container):
                             ),
                             style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
                             bgcolor='#FF8412',
-                            #on_click=self.show_mensual
+                            on_click=self.txt
                         )
             ])
         )
+    def txt(self, button):
+            self.cadena_texto_semanal.value = self.txt_consolidado.value
+            self.cadena_texto_local.value = self.txt_compra_local.value
+            self.separar_caracteres()
+            self.txt_consolidado.value = ""
+            self.txt_compra_local.value = ""
+
+            self.update()
+    def separar_caracteres(self):
+        print(self.cadena_texto_semanal.value)
+        df_semanal = pd.DataFrame(self.cadena_texto_semanal.value)
+        print(df_semanal)
+        
