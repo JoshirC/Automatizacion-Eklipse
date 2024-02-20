@@ -16,7 +16,7 @@ class Menu(ft.Container):
             ft.Container(
                     width=250,
                     height=600,
-                    bgcolor=ft.colors.ORANGE,
+                    bgcolor='#FF8412',
                     padding=15,
                     content=ft.Column([
                         ft.Image(src=f"https://cdn.discordapp.com/attachments/602383815486210058/1209131285423853569/Logo-Eklipse-02-1.png?ex=65e5ce43&is=65d35943&hm=3acb8be947925f9a7bbaec9e27b8bfd7294bf1584f1f7bb7f91bcd5791772e9d&", width=220, height=250),
