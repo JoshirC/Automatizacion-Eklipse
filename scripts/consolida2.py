@@ -11,14 +11,8 @@ cat_2 = ['AVES', 'CECINAS','CERDO','FRIZADOS', 'FRUTA Y VERDURA', 'HUEVOS Y LACT
 Función que permite modelar los datos obtenidos de los archivos de excel, para luego obtener estadisticas sobre estos mismos.
 
 '''
-def data_frame(df, dcl):
-    dlc = dcl[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO','CANT. TOTAL', 'CENTRO', 'MES']]
-    dlc['SALIDA'] = "LOCAL"
-    dlc['CATEGORIA'] = "NN"
-    dlc = dlc.rename(columns={'CANT. TOTAL': 'RECTIFICACION'})
-    df = df[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'RECTIFICACION', 'CENTRO', 'MES', 'CATEGORIA']]
-    df['SALIDA'] = "BODEGA"
-    df = pd.concat([df,dlc])
+def data_frame(df):
+    df = df[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'RECTIFICACION', 'CENTRO', 'MES', 'CATEGORIA', "SALIDA"]]
     df.sort_values('DESCRIPCION PRODUCTO', inplace=True)
     df.dropna(subset=['RECTIFICACION'], inplace=True)
     
@@ -28,7 +22,7 @@ Función que permite leer los archivos de compra local y los transforma según e
 
 '''
 def compra_local():
-    archivos = ["C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\Compra local - Colbun v2.xlsx"]
+    archivos = ["C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\Compra local - Colbun.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\Compra local - Cerro Negro.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\Compra local - Inca de Oro.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\Compra local - Pucobre.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\Compra local - Rio Blanco.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\Compra local - Rocas.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\Compra local - Chacabuco.xlsx"]
     centros = []
     name_centro = []
     dfs = []
@@ -41,7 +35,6 @@ def compra_local():
         df = df[df['CANT. TOTAL'] != 0]
         df.dropna(subset=['CANT. TOTAL'], inplace=True)
 
-        print(df)
         unico_centro = df['CENTRO'].unique()
         valores_sin_corchetes = ', '.join(unico_centro)
         name_centro.append(valores_sin_corchetes)
@@ -52,17 +45,37 @@ def compra_local():
 
     dlc = pd.concat(dfs)
     dff = dlc.sort_values(by=['FAMILIA','DESCRIPCION PRODUCTO'])
+    dl_c = dlc[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO','CANT. TOTAL', 'CENTRO', 'MES']]
+    print(dl_c)
+    dl_c = dlc.rename(columns={'CANT. TOTAL': 'RECTIFICACION'})
+    dl_c["CATEGORIA"] = "NN"
+    dl_c["SALIDA"] = "LOCAL"
+    dl_c = data_frame(dl_c)
     for i in range(len(name_centro)):
         dc = dff[dff['CENTRO'] == name_centro[i]]
         dc = dc[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'CANT. TOTAL']]
         centros.append(dc)
-    return centros, name_centro, dlc
+    with pd.ExcelWriter("C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\0_COMPRA_LOCAL.xlsx") as writer:
+        for i in range(len(centros)):
+            centros[i].to_excel(writer, sheet_name=name_centro[i], index=False)
+        dl_c.to_excel(writer, sheet_name='Modelado Estadistico', index=False)    
+    #return centros, name_centro, dlc
 '''
 Función que permite modelar los datos para procesar las solicitudes de envio en bodega.
 
 '''
-def bodega(df_final,name_centro):
-    centros = []
+def bodega():
+    df = pd.read_excel("C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\0_CONSOLIDADO.xlsx", sheet_name='Detalle Consolidado')
+    n_columnas = len(df.columns)
+    n_columnas = n_columnas - 1
+
+    with pd.ExcelWriter("C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\0_BODEGA.xlsx") as writer:
+        for i in range(5,n_columnas):
+            df_final = df[['FAMILIA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO','UNIDAD',df.columns[i]]].dropna()
+            df_final.to_excel(writer, sheet_name=df.columns[i], index=False)
+    print("---> Archivo de BODEGA creado.")
+    '''
+        centros = []
     for i in range(len(name_centro)):
         dc = df_final[['FAMILIA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO','UNIDAD','CATEGORIA',name_centro[i]]].dropna()
         dc = dc[dc[name_centro[i]] != 0]
@@ -74,6 +87,8 @@ def bodega(df_final,name_centro):
         for i in range(len(centros)):
             centros[i].to_excel(writer, sheet_name=name_centro[i], index=False)
     print("---> Archivo de BODEGA creado.")
+    '''
+    
 '''
 Función que permite modelar los datos para procesar las solicitudes de reposicion.
 
@@ -108,10 +123,11 @@ def modelado_reposicion(df, n_centros):
 Función que permite modelar los datos para procesar las solicitudes de compra.
 
 '''
-def modelado(df, centros, name_centro, n_centros, dlc):
+def modelado(df, n_centros):
     df['FAMILIA'] = df['FAMILIA'].fillna('X')
     df['COD. PRODUCTO'] = df['COD. PRODUCTO'].fillna('X') 
-    d_data = data_frame(df, dlc)
+    df["SALIDA"] = "BODEGA"
+    d_data = data_frame(df)
     df = df.pivot_table(index=['FAMILIA','COD. PRODUCTO','DESCRIPCION PRODUCTO','UNIDAD','CATEGORIA'],columns='CENTRO',values='RECTIFICACION').reset_index()
     s_a = df[df['CATEGORIA'] != 'PRODUCTOS'].reset_index(drop=True)
 
@@ -132,10 +148,7 @@ def modelado(df, centros, name_centro, n_centros, dlc):
         df.to_excel(writer, sheet_name='Detalle Consolidado', index=False)
         s_a.to_excel(writer, sheet_name='Pendientes Aprobacion', index=False)
         d_data.to_excel(writer, sheet_name='Modelado Estadistico', index=False)
-        for i in range(len(centros)):
-            centros[i].to_excel(writer, sheet_name=('C.L '+name_centro[i]), index=False)
     print("---> Archivo de CONSOLIDADO creado.")
-    bodega(df, n_centros)
 '''
 Función que permite leer los archivos de compra local y los transforma según el modelo indicado.
 
@@ -162,15 +175,16 @@ Función principal que administra el script y carga los archivos según la opci�
 '''
 def menu():
     while True:
-        print("----- MENÚ ------\n1.Consolidado Mensual\n2.Consolidado Semanal\n3.Reposiciones\n4.Salir")
+        print("----- MENÚ ------\n1.Consolidado Mensual\n2.Consolidado Semanal\n3.Reposiciones\n4.Compra Local\n5.Bodega\n6.Salir\n-----------------")
         opcion = input("Seleccione una opción: ")
         if opcion == "1":
             n_centros = []
             dfs = []
-            df = ["C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\Solicitud Mensual - Colbun.xlsx"]
+            df = ["C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\Solicitud Mensual - Colbun.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\Solicitud Mensual - Cerro Negro.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\Solicitud Mensual - Chacabuco.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\Solicitud Mensual - Inca de Oro.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\Solicitud Mensual - Pachon.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\Solicitud Mensual - Pucobre.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\Solicitud Mensual - Rio Blanco.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\Solicitud Mensual - Rocas.xlsx","C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Marzo\\Semana 1\\Solicitud Mensual - Tololo.xlsx"]
             print("----- % MODELANDO DATOS % -----")
             for archivo in df:
                 try:
+                    print(archivo)
                     df_producto = pd.read_excel(archivo,dtype={'COD. PRODUCTO': str}, sheet_name='PRODUCTOS')
                     df_producto = modelado_mensual(df_producto, 'PRODUCTOS')
                     dfs.append(df_producto)
@@ -188,8 +202,8 @@ def menu():
                     print("---> Ocurrió un error al leer el archivo:", str(e))
                 
             df_final = pd.concat(dfs)
-            centros, name_centro, dlc = compra_local()
-            modelado(df_final, centros, name_centro, n_centros, dlc)  
+            #centros, name_centro, dlc = compra_local()
+            modelado(df_final, n_centros)  
         elif opcion == "2":
             n_centros = []
             dfs = []
@@ -213,8 +227,8 @@ def menu():
                     print("---> Ocurrió un error al leer el archivo:", str(e))
             print("---> Datos modelados exitosamente.")
             df_final = pd.concat(dfs)
-            centros, name_centro, dlc = compra_local()
-            modelado(df_final, centros, name_centro, n_centros, dlc)     
+            #centros, name_centro, dlc = compra_local()
+            modelado(df_final, n_centros)     
         elif opcion == "3":
             n_centros = []
             dfs = []
@@ -235,7 +249,12 @@ def menu():
             print("---> Datos modelados exitosamente.")
             df_final = pd.concat(dfs)
             modelado_reposicion(df_final, n_centros)  
+        
         elif opcion == "4":
+            compra_local()
+        elif opcion == "5":
+            bodega()
+        elif opcion == "6":
             print("Saliendo del programa...")
             break
         else:

@@ -1,12 +1,16 @@
+from io import StringIO
+import os
 import flet as ft
 import pandas as pd
 
 class Consolidado(ft.Container):
-    cadena_texto_semanal = ft.Text("")
-    cadena_texto_local = ft.Text("")
+    #cadena_texto_semanal = ft.Text("")
+    #cadena_texto_local = ft.Text("")
 
+    directorio = ft.Text("")
+    txt_salida = ft.Text("")
     txt_consolidado = ft.TextField(label="Ingrese la ruta de los archivos", multiline=True, bgcolor=ft.colors.WHITE)
-    txt_compra_local = ft.TextField(label="Ingrese la ruta de los archivos", multiline=True, bgcolor=ft.colors.WHITE,)
+    txt_nombre_archivo = ft.TextField(label="Ingrese el nombre del archivo a crear", multiline=False, bgcolor=ft.colors.WHITE,)
 
     def __init__(self):
         super().__init__(
@@ -15,50 +19,42 @@ class Consolidado(ft.Container):
             padding=10, 
             bgcolor=ft.colors.WHITE,
             content=ft.Column([
-                ft.Text("CONSOLIDADO", size=30, weight=ft.FontWeight.W_900, selectable=True), #Titulo
-                ft.Container( #Contenedor para el contenido
+                ft.Text("RECTIFICACIÓN", size=30, weight=ft.FontWeight.W_900, selectable=True), #Titulo
+                ft.Container( #Contenedor para archivo semanal
                     width=695,
-                    height=420,
+                    height=250,
+                    bgcolor="#D9D9D9",
+                    border_radius=12,
                     alignment=ft.alignment.center,
-                    content= ft.Row([
-                        ft.Container( #Contenedor para archivo semanal
-                            width=342,
-                            height=420,
-                            bgcolor="#D9D9D9",
+                    padding=15,
+                    content=ft.Column([
+                        ft.Text("Rectificado Semanal", size=20),
+                        ft.Container( #Contenedor para mostrar archivos cargados (scroll ?)
+                            width=680,
+                            height=180,
+                            #bgcolor=ft.colors.WHITE,
                             border_radius=12,
-                            alignment=ft.alignment.center,
-                            padding=15,
-                            content=ft.Column([
-                                ft.Text("Rectificado Semanal", size=20),
-                                ft.Container( #Contenedor para mostrar archivos cargados (scroll ?)
-                                    width=300,
-                                    height=350,
-                                    #bgcolor=ft.colors.WHITE,
-                                    border_radius=12,
-                                    padding=5,
-                                    content= self.txt_consolidado
-                                ),
-                            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-
-                         ),
-                        ft.Container( #Contenedor para archivo local
-                            width=342,
-                            height=420,
-                            bgcolor="#D9D9D9",
+                            padding=5,
+                            content= self.txt_consolidado
+                            ),
+                        ]),
+                ),
+                ft.Container(
+                    width=695,
+                    height=150,
+                    bgcolor="#D9D9D9",
+                    border_radius=12,
+                    padding=15,
+                    alignment=ft.alignment.center,
+                    content=ft.Column([
+                        ft.Text("Archivo Consolidado", size=20),
+                        ft.Container(
+                            width=680,
+                            height=80,
                             border_radius=12,
-                            padding=15,
-                            content=ft.Column([
-                                ft.Text("Compra Local", size=20),
-                                ft.Container(
-                                    width=300,
-                                    height=350,
-                                    #bgcolor=ft.colors.WHITE,
-                                    border_radius=12,
-                                    padding=5,
-                                    content= self.txt_compra_local
-                                ),
-                            ],alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-                        )
+                            padding=5,
+                            content=self.txt_nombre_archivo
+                        ),
                     ]),
                 ),
                 ft.ElevatedButton( #Boton para generar el consolidado
@@ -75,15 +71,96 @@ class Consolidado(ft.Container):
             ])
         )
     def txt(self, button):
-            self.cadena_texto_semanal.value = self.txt_consolidado.value
-            self.cadena_texto_local.value = self.txt_compra_local.value
-            self.separar_caracteres()
-            self.txt_consolidado.value = ""
-            self.txt_compra_local.value = ""
+            try:
+                txt_archivos = self.txt_consolidado.value
+                #Al ARCHIVO DE SALIDA ASIGNARLE LA RUTA 
+                self.txt_salida.value = self.txt_nombre_archivo.value
+                lista_archivos = txt_archivos.splitlines()
+                lista_archivos = [archivo.replace('"', '') for archivo in lista_archivos]
+                #lista_archivos = ['"'+archivo.replace('\\', '\\\\')+'"' for archivo in lista_archivos]
+                
+                self.dataFrame(lista_archivos)
+                self.txt_consolidado.value = ""
+                self.txt_nombre_archivo.value = ""
+                self.update()
+            except:
+                print("Error")
+    def dataFrame(self,archivo):
+        dfs = []
+        for i in range(len(archivo)):
+        #LECTURA DE ARCHIVO EN HOJA PRODUCTOS
+            df_producto = pd.read_excel(archivo[i], dtype={'COD. PRODUCTO': str}, sheet_name='PRODUCTOS')
+        #MODELADO DE DATAFRAME
+            df_producto = df_producto[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'RECTIFICACION', 'CENTRO', 'SEMANA', 'MES']]
+            df_producto['CATEGORIA'] = "PRODUCTO"
+            df_producto['RECTIFICACION'].astype(float)
+            df_producto = df_producto.dropna(subset=['RECTIFICACION'])
+            dfs.append(df_producto)
+        #LECTURA DE ARCHIVO EN HOJA ESPECIALES
+            df_especiales = pd.read_excel(archivo[i], dtype={'COD. PRODUCTO': str}, sheet_name='ESPECIALES')
+        #MODELADO DE DATAFRAME
+            df_especiales = df_especiales[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'RECTIFICACION', 'CENTRO', 'SEMANA', 'MES']]
+            df_especiales['CATEGORIA'] = "ESPECIAL"
+            df_especiales['RECTIFICACION'].astype(float)
+            df_especiales = df_especiales.dropna(subset=['RECTIFICACION'])
+            dfs.append(df_especiales)
+        #NOMBRE DE LA RUTA DE LOS ARCHIVOS
+            self.directorio.value = os.path.dirname(archivo[i])
+        df = pd.concat(dfs)
+        print('------> LECTURA DE ARCHIVOS <------')
+        self.modelado(df)
 
-            self.update()
-    def separar_caracteres(self):
-        print(self.cadena_texto_semanal.value)
-        df_semanal = pd.DataFrame(self.cadena_texto_semanal.value)
-        print(df_semanal)
+    def modelado(self,df):
+    #VARIABLES GLOBALES
+        cat_1 = ['ABARROTES','BEBESTIBLES', 'CONFITERIA', 'DESECHABLES', 'EPP', 'MATERIALES DE LIMPIEZA', 'ART ESCRITORIO', 'ART KIOSCO']
+        cat_2 = ['AVES', 'CECINAS','CERDO','FRIZADOS', 'FRUTA Y VERDURA', 'HUEVOS Y LACTEOS', 'PANADERIA', 'PESCADOS Y MARISCOS','VACUNO','PRE-ELABORADOS','PLATOS PREPARADOS','X']
+
+    #MODELADO DE DATAFRAME
+        df['FAMILIA'] = df['FAMILIA'].fillna('X')
+        df['COD. PRODUCTO'] = df['COD. PRODUCTO'].fillna('X')
+        df['SALIDA'] = "BODEGA"
+
+    #MODELADO DE DATAFRAME PARA DETALLE ESTADISTICO
+        df_data = self.dataFrameEstadistico(df)
+
+    #TRANSFORMACION DE COLUMNAS
+        df = df.pivot_table(index=['FAMILIA','COD. PRODUCTO','DESCRIPCION PRODUCTO','UNIDAD','CATEGORIA'],columns='CENTRO',values='RECTIFICACION').reset_index()
+        df_aprobacion = df[df['CATEGORIA'] != 'PRODUCTO'].reset_index(drop=True)
+
+    #ORDEN DEL DATAFRAME
+        df = df.sort_values(by=['FAMILIA','DESCRIPCION PRODUCTO'])
+        grupo1 = df[df['FAMILIA'].isin(cat_1)]
+        grupo2 = df[df['FAMILIA'].isin(cat_2)]
+
+        df = pd.concat([grupo1,grupo2]).reset_index(drop=True)
+
+        grupo1 = df_aprobacion[df_aprobacion['FAMILIA'].isin(cat_1)]
+        grupo2 = df_aprobacion[df_aprobacion['FAMILIA'].isin(cat_2)]
+
+        df_aprobacion = pd.concat([grupo1,grupo2]).reset_index(drop=True)
+
+    #VARIABLE TOTAL
+        df_total = df.drop(columns=['FAMILIA','COD. PRODUCTO','DESCRIPCION PRODUCTO','UNIDAD','CATEGORIA'])
+        df['TOTAL'] = df_total.sum(axis=1)
+
+    #CREACION DE ARCHIVO
+        print('------> MODELADO DE ARCHIVO <------')
+        self.creacion_archivo(df,df_data,df_aprobacion)
         
+    def dataFrameEstadistico(self,df):
+        df = df[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'RECTIFICACION', 'CENTRO', 'MES', 'CATEGORIA', "SALIDA"]]
+        df.sort_values('DESCRIPCION PRODUCTO', inplace=True)
+        df.dropna(subset=['RECTIFICACION'], inplace=True)
+        print('------> MODELADO ESTADISTICO <------')
+        return df
+    
+    def creacion_archivo(self,df,df_data,df_aprobacion):
+        print('------> CREACION DE ARCHIVO <------')
+        ruta = self.directorio.value
+        nombre = self.txt_salida.value
+        nombre_archivo = ruta + '\\' + nombre + '.xlsx'
+        with pd.ExcelWriter(nombre_archivo) as writer:
+            df.to_excel(writer, sheet_name='Detalle Consolidado', index=False)
+            df_aprobacion.to_excel(writer, sheet_name='Pendientes Aprobación', index=False)
+            df_data.to_excel(writer, sheet_name='Modelado Estadistico', index=False)
+            
