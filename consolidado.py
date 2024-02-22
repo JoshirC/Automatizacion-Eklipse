@@ -4,9 +4,6 @@ import flet as ft
 import pandas as pd
 
 class Consolidado(ft.Container):
-    #cadena_texto_semanal = ft.Text("")
-    #cadena_texto_local = ft.Text("")
-
     directorio = ft.Text("")
     txt_salida = ft.Text("")
     txt_consolidado = ft.TextField(label="Ingrese la ruta de los archivos", multiline=True, bgcolor=ft.colors.WHITE)
@@ -73,11 +70,9 @@ class Consolidado(ft.Container):
     def txt(self, button):
             try:
                 txt_archivos = self.txt_consolidado.value
-                #Al ARCHIVO DE SALIDA ASIGNARLE LA RUTA 
                 self.txt_salida.value = self.txt_nombre_archivo.value
                 lista_archivos = txt_archivos.splitlines()
                 lista_archivos = [archivo.replace('"', '') for archivo in lista_archivos]
-                #lista_archivos = ['"'+archivo.replace('\\', '\\\\')+'"' for archivo in lista_archivos]
                 
                 self.dataFrame(lista_archivos)
                 self.txt_consolidado.value = ""
@@ -156,11 +151,12 @@ class Consolidado(ft.Container):
     
     def creacion_archivo(self,df,df_data,df_aprobacion):
         print('------> CREACION DE ARCHIVO <------')
+    #CREACION DE RUTA Y NOMBRE DE ARCHIVO
         ruta = self.directorio.value
         nombre = self.txt_salida.value
         nombre_archivo = ruta + '\\' + nombre + '.xlsx'
+    #EXPORTACION DE ARCHIVO
         with pd.ExcelWriter(nombre_archivo) as writer:
             df.to_excel(writer, sheet_name='Detalle Consolidado', index=False)
             df_aprobacion.to_excel(writer, sheet_name='Pendientes Aprobación', index=False)
             df_data.to_excel(writer, sheet_name='Modelado Estadistico', index=False)
-            
