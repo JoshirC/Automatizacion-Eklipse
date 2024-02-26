@@ -100,12 +100,11 @@ def modelado_reposicion(df):
     df['ESTATUS'] = 'SOLICITADO'
     df['FECHA DESPACHO'] = ''
     df['FECHA'].rename('FECHA SOLICITUD')
-    df['FECHA SOLICITUD'] = df['FECHA SOLICITUD']
+    df['COMENTARIOS'] = pd.Series(dtype=object)
     df.dropna(subset=['CANTIDAD'], inplace=True)
 
     with pd.ExcelWriter("C:\\Users\\joshi\\Desktop\\EKLIPSE\\Consolidado\\Planillas\\Consolidado3\\1_REPOSICIONES.xlsx") as writer:
         df.to_excel(writer, sheet_name='Guia de estatus', index=False)
-
 
 '''
 Función que permite modelar los datos para procesar las solicitudes de compra.

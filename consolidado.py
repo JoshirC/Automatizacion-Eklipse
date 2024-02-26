@@ -3,6 +3,7 @@ import os
 import flet as ft
 import pandas as pd
 
+from assets.modals import modal_error, modal_correcto, modal_inicial
 class Consolidado(ft.Container):
     directorio = ft.Text("")
     txt_salida = ft.Text("")
@@ -15,58 +16,67 @@ class Consolidado(ft.Container):
             height=600,
             padding=10, 
             bgcolor=ft.colors.WHITE,
-            content=ft.Column([
-                ft.Text("RECTIFICACIÓN", size=30, weight=ft.FontWeight.W_900, selectable=True), #Titulo
-                ft.Container( #Contenedor para archivo semanal
-                    width=695,
-                    height=250,
-                    bgcolor="#D9D9D9",
-                    border_radius=12,
-                    alignment=ft.alignment.center,
-                    padding=15,
-                    content=ft.Column([
-                        ft.Text("Rectificado Semanal", size=20),
-                        ft.Container( #Contenedor para mostrar archivos cargados (scroll ?)
-                            width=680,
-                            height=180,
-                            #bgcolor=ft.colors.WHITE,
-                            border_radius=12,
-                            padding=5,
-                            content= self.txt_consolidado
-                            ),
-                        ]),
-                ),
-                ft.Container(
-                    width=695,
-                    height=150,
-                    bgcolor="#D9D9D9",
-                    border_radius=12,
-                    padding=15,
-                    alignment=ft.alignment.center,
-                    content=ft.Column([
-                        ft.Text("Archivo Consolidado", size=20),
-                        ft.Container(
-                            width=680,
-                            height=80,
-                            border_radius=12,
-                            padding=5,
-                            content=self.txt_nombre_archivo
+            content= self.create_consolidado(modal_inicial)
+        )
+    def create_consolidado(self, modal):
+        return ft.Column([
+            ft.Container(
+                width=700,
+                height=40,
+                content=ft.Row([
+                    ft.Text("RECTIFICACIÓN", size=30, weight=ft.FontWeight.W_900, selectable=True), #Titulo
+                    modal
+                ],alignment =ft.MainAxisAlignment.SPACE_BETWEEN),
+            ),
+            ft.Container( #Contenedor para archivo semanal
+                width=695,
+                height=250,
+                bgcolor="#D9D9D9",
+                border_radius=12,
+                alignment=ft.alignment.center,
+                padding=15,
+                content=ft.Column([
+                    ft.Text("Rectificado Semanal", size=20),
+                    ft.Container( #Contenedor para mostrar archivos cargados (scroll ?)
+                        width=680,
+                        height=180,
+                        #bgcolor=ft.colors.WHITE,
+                        border_radius=12,
+                        padding=5,
+                        content= self.txt_consolidado
                         ),
                     ]),
-                ),
-                ft.ElevatedButton( #Boton para generar el consolidado
-                            content= ft.Container(
-                                width=650,
-                                height=50,
-                                alignment=ft.alignment.center,
-                                content=ft.Text("Generar Consolidado", color=ft.colors.WHITE, size=20),
-                            ),
-                            style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
-                            bgcolor='#FF8412',
-                            on_click=self.txt
-                        )
-            ])
-        )
+            ),
+            ft.Container(
+                width=695,
+                height=150,
+                bgcolor="#D9D9D9",
+                border_radius=12,
+                padding=15,
+                alignment=ft.alignment.center,
+                content=ft.Column([
+                    ft.Text("Archivo Consolidado", size=20),
+                    ft.Container(
+                        width=680,
+                        height=80,
+                        border_radius=12,
+                        padding=5,
+                        content=self.txt_nombre_archivo
+                    ),
+                ]),
+            ),
+            ft.ElevatedButton( #Boton para generar el consolidado            
+                content= ft.Container(
+                        width=650,
+                        height=50,
+                        alignment=ft.alignment.center,
+                        content=ft.Text("Generar Consolidado", color=ft.colors.WHITE, size=20),
+                        ),
+                        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
+                        bgcolor='#FF8412',
+                        on_click=self.txt
+                )
+        ])
     def txt(self, button):
             try:
                 txt_archivos = self.txt_consolidado.value
@@ -77,9 +87,11 @@ class Consolidado(ft.Container):
                 self.dataFrame(lista_archivos)
                 self.txt_consolidado.value = ""
                 self.txt_nombre_archivo.value = ""
+                self.content = self.create_consolidado(modal_correcto)
                 self.update()
             except:
-                print("Error")
+                self.content = self.create_consolidado(modal_error)
+                self.update()
     def dataFrame(self,archivo):
         dfs = []
         for i in range(len(archivo)):

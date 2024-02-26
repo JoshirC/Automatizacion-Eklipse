@@ -17,10 +17,14 @@ class Reposiciones(ft.Container):
         )
     def create_reposiciones(self, modal):
         return ft.Column([
-            ft.Row([
+            ft.Container(
+                width=700,
+                height=40,
+                content=ft.Row([
                     ft.Text("REPOSICIONES", size=30, weight=ft.FontWeight.W_900, selectable=True), #Titulo
                     modal
-                ],alignment =ft.MainAxisAlignment.SPACE_AROUND),
+                ],alignment =ft.MainAxisAlignment.SPACE_BETWEEN),
+            ),
             ft.Container(
                 width=695,
                 height=250,
@@ -59,10 +63,10 @@ class Reposiciones(ft.Container):
             ),
             ft.ElevatedButton(
                 content=ft.Container(
-                    width=200,
+                    width=650,
                     height=50,
                     alignment=ft.alignment.center,
-                    content=ft.Text("Generar Reposiciones", color=ft.colors.BLACK, size=15),
+                    content=ft.Text("Generar Reposiciones", color=ft.colors.WHITE, size=20),
                 ),
                 style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
                 bgcolor="#FF8412",

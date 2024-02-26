@@ -24,3 +24,11 @@ modal_correcto = ft.Container(
         ft.Text("Archivo Creado", color=ft.colors.WHITE, size=20)          
     ], alignment=ft.MainAxisAlignment.CENTER)
 );
+modal_inicial = ft.Container(
+    width=250,
+    height=50,
+    bgcolor=ft.colors.WHITE,
+    padding=5,
+    border_radius=15,
+    alignment=ft.alignment.center,
+);

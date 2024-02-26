@@ -1,8 +1,8 @@
 import os
 import flet as ft
 import pandas as pd
-from  assets.modals import modal_error, modal_correcto
 
+from  assets.modals import modal_error, modal_correcto, modal_inicial
 class CompraLocal(ft.Container):
     directorio = ft.Text("")
     txt_salida = ft.Text("")
@@ -14,65 +14,67 @@ class CompraLocal(ft.Container):
             height=600,
             padding=10, 
             bgcolor=ft.colors.WHITE,
-            content=ft.Column([
-                ft.Row([
-                    ft.Text("COMPRA LOCAL", size=30, weight=ft.FontWeight.W_900, selectable=True), #Titulo
-                    modal_correcto
-                ],alignment =ft.MainAxisAlignment.SPACE_AROUND),
-                ft.Container( #Contenedor para archivo compra local
-                    width=695,
-                    height=250,
-                    bgcolor="#D9D9D9",
-                    border_radius=12,
-                    alignment=ft.alignment.center,
-                    padding=15,
-                    content=ft.Column([
-                        ft.Text("Consolidado Compra Local", size=20),
-                        ft.Container( #Contenedor para mostrar archivos cargados (scroll ?)
-                            width=680,
-                            height=180,
-                            #bgcolor=ft.colors.WHITE,
-                            border_radius=12,
-                            padding=5,
-                            content= self.txt_compra_local
-                            ),
-                    ]),
-                ),
-                ft.Container(
-                    width=695,
-                    height=150,
-                    bgcolor="#D9D9D9",
-                    border_radius=12,
-                    padding=15,
-                    alignment=ft.alignment.center,
-                    content=ft.Column([
-                        ft.Text("Archivo Salida Compra Local", size=20),
-                        ft.Container(
-                            width=680,
-                            height=80,
-                            border_radius=12,
-                            padding=5,
-                            content=self.txt_nombre_archivo
-                        ),
-                    ]),
-                ),
-                ft.ElevatedButton( #Boton para generar el consolidado
-                    content= ft.Container(
-                        width=650,
-                        height=50,
-                        alignment=ft.alignment.center,
-                        content=ft.Text("Generar Compra Local", color=ft.colors.WHITE, size=20),
-                    ),
-                    style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
-                    bgcolor="#FF8412",
-                    on_click=self.generar_compra_local
-                )
-            ]),
+            content=self.create_compra_local(modal_inicial)
         )
-    def mostrar_alerta_dialogo(self, titulo,event):
-        # Mostrar la alerta de diálogo
-        self.modal_error.open = True
-        self.update()
+    def create_compra_local(self, modal):
+        return ft.Column([
+            ft.Container(
+                width=700,
+                height=40,
+                content=ft.Row([
+                    ft.Text("COMPRA LOCAL", size=30, weight=ft.FontWeight.W_900, selectable=True), #Titulo
+                    modal
+                ],alignment =ft.MainAxisAlignment.SPACE_BETWEEN),
+            ),
+            ft.Container( #Contenedor para archivo compra local
+                width=695,
+                height=250,
+                bgcolor="#D9D9D9",
+                border_radius=12,
+                alignment=ft.alignment.center,
+                padding=15,
+                content=ft.Column([
+                    ft.Text("Consolidado Compra Local", size=20),
+                    ft.Container( #Contenedor para mostrar archivos cargados (scroll ?)
+                        width=680,
+                        height=180,
+                        #bgcolor=ft.colors.WHITE,
+                        border_radius=12,
+                        padding=5,
+                        content= self.txt_compra_local
+                    ),
+                ]),
+            ),
+            ft.Container(
+                width=695,
+                height=150,
+                bgcolor="#D9D9D9",
+                border_radius=12,
+                padding=15,
+                alignment=ft.alignment.center,
+                content=ft.Column([
+                    ft.Text("Archivo Salida Compra Local", size=20),
+                    ft.Container(
+                        width=680,
+                        height=80,
+                        border_radius=12,
+                        padding=5,
+                        content=self.txt_nombre_archivo
+                    ),
+                ]),
+            ),
+            ft.ElevatedButton( #Boton para generar el consolidado
+                content= ft.Container(
+                    width=650,
+                    height=50,
+                    alignment=ft.alignment.center,
+                    content=ft.Text("Generar Compra Local", color=ft.colors.WHITE, size=20),
+                ),
+                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
+                bgcolor="#FF8412",
+                on_click=self.generar_compra_local
+            )
+        ])
     def generar_compra_local(self, button):
         try:
             txt_archivos = self.txt_compra_local.value
@@ -81,12 +83,14 @@ class CompraLocal(ft.Container):
             lista_archivos = [archivo.replace('"', '') for archivo in lista_archivos]
 
             self.dataFrame(lista_archivos)
+
+            self.content = self.create_compra_local(modal_correcto)
             self.txt_compra_local.value = ""
             self.txt_nombre_archivo.value = ""
             self.update()
         except Exception as e:
-            # En caso de error, mostrar la alerta de diálogo
-            self.mostrar_alerta_dialogo("Error", f"Ocurrió un error: {str(e)}")
+            self.content = self.create_compra_local(modal_error)
+            self.update()
     
     def dataFrame(self, archivo):
         dfs = []
