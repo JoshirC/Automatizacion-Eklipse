@@ -13,11 +13,16 @@ class Menu(ft.Container):
             padding=10,
            #bgcolor=ft.colors.BLUE
             content=ft.Column([
-                ft.Text("Bienvenido a EKLIPSE", size=30, weight=ft.FontWeight.W_900, selectable=True), #Titulo
                 ft.Container(
-                    content=ft.Image(src=f"/images/Concurso Fotografico Ganadores.jpg", width=700, height=400,border_radius=50)
+                    content=ft.Image(src=f"/images/fondo.jpg", width=700, height=400)
                 ),
-                ft.Text("Creado por Joshir Contreras S ")
+                ft.Text("Bienvenido a EKLIPSE", size=60, weight=ft.FontWeight.W_900, selectable=True), #Titulo
+                ft.Row([
+                    ft.Icon(ft.icons.COPYRIGHT_SHARP, size=15, color=ft.colors.BLACK),
+                    ft.Text("2024 - Joshir Contreras", size=12, color=ft.colors.BLACK),
+                    ft.Icon(ft.icons.EMAIL_OUTLINED, size=15, color=ft.colors.BLACK),
+                    ft.Text("joshir.contreras@gmail.com", size=12, color=ft.colors.BLACK),
+                ]),
             ])
 
         )  # Inicialmente mostrara la informacion de la APP
