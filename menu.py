@@ -7,7 +7,20 @@ from bodega import Bodega
 
 class Menu(ft.Container):
     def __init__(self):
-        self.main_content = Consolidado()  # Inicialmente mostrar la vista de Consolidado
+        self.main_content = ft.Container(
+            width=750, 
+            height=600,
+            padding=10,
+           #bgcolor=ft.colors.BLUE
+            content=ft.Column([
+                ft.Text("Bienvenido a EKLIPSE", size=30, weight=ft.FontWeight.W_900, selectable=True), #Titulo
+                ft.Container(
+                    content=ft.Image(src=f"/images/Concurso Fotografico Ganadores.jpg", width=700, height=400,border_radius=50)
+                ),
+                ft.Text("Creado por Joshir Contreras S ")
+            ])
+
+        )  # Inicialmente mostrara la informacion de la APP
         super().__init__(
             width=1000,
             height=600,
@@ -21,7 +34,7 @@ class Menu(ft.Container):
                     bgcolor='#FF8412',
                     padding=15,
                     content=ft.Column([
-                        ft.Image(src=f"https://cdn.discordapp.com/attachments/602383815486210058/1209131285423853569/Logo-Eklipse-02-1.png?ex=65e5ce43&is=65d35943&hm=3acb8be947925f9a7bbaec9e27b8bfd7294bf1584f1f7bb7f91bcd5791772e9d&", width=220, height=200),
+                        ft.Image(src=f"/images/logo_eklipse.png", width=220, height=200),
                         ft.ElevatedButton(
                             content= ft.Container(
                                 width=200,

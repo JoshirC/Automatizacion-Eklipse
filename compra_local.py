@@ -1,13 +1,13 @@
 import os
 import flet as ft
 import pandas as pd
+from  assets.modals import modal_error, modal_correcto
 
 class CompraLocal(ft.Container):
     directorio = ft.Text("")
     txt_salida = ft.Text("")
     txt_compra_local = ft.TextField(label="Ingrese la ruta de los archivos", multiline=True, bgcolor=ft.colors.WHITE)
-    txt_nombre_archivo = ft.TextField(label="Ingrese el nombre del archivo a crear", multiline=False, bgcolor=ft.colors.WHITE)
-
+    txt_nombre_archivo = ft.TextField(label="Ingrese el nombre del archivo a crear", multiline=False, bgcolor=ft.colors.WHITE) 
     def __init__(self):
         super().__init__(
             width=750, 
@@ -15,7 +15,10 @@ class CompraLocal(ft.Container):
             padding=10, 
             bgcolor=ft.colors.WHITE,
             content=ft.Column([
-                ft.Text("COMPRA LOCAL", size=30, weight=ft.FontWeight.W_900, selectable=True), #Titulo
+                ft.Row([
+                    ft.Text("COMPRA LOCAL", size=30, weight=ft.FontWeight.W_900, selectable=True), #Titulo
+                    modal_correcto
+                ],alignment =ft.MainAxisAlignment.SPACE_AROUND),
                 ft.Container( #Contenedor para archivo compra local
                     width=695,
                     height=250,
@@ -66,6 +69,10 @@ class CompraLocal(ft.Container):
                 )
             ]),
         )
+    def mostrar_alerta_dialogo(self, titulo,event):
+        # Mostrar la alerta de diálogo
+        self.modal_error.open = True
+        self.update()
     def generar_compra_local(self, button):
         try:
             txt_archivos = self.txt_compra_local.value
@@ -77,8 +84,9 @@ class CompraLocal(ft.Container):
             self.txt_compra_local.value = ""
             self.txt_nombre_archivo.value = ""
             self.update()
-        except:
-            print("Error al generar el consolidado de compra local")
+        except Exception as e:
+            # En caso de error, mostrar la alerta de diálogo
+            self.mostrar_alerta_dialogo("Error", f"Ocurrió un error: {str(e)}")
     
     def dataFrame(self, archivo):
         dfs = []
@@ -151,3 +159,4 @@ class CompraLocal(ft.Container):
             df_estadistico.to_excel(writer, sheet_name='Modelado Estadistico', index=False)
             for i in range(len(centros)):
                 centros[i].to_excel(writer, sheet_name=name_centro[i], index=False)
+   
