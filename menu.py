@@ -4,6 +4,7 @@ from mensual import Mensual
 from reposiciones import Reposiciones
 from compra_local import CompraLocal
 from bodega import Bodega
+from unificar import Unificar
 
 class Menu(ft.Container):
     def __init__(self):
@@ -37,13 +38,14 @@ class Menu(ft.Container):
                     width=250,
                     height=600,
                     bgcolor='#FF8412',
-                    padding=15,
+                    padding=20,
+                    #alignment=ft.alignment.center,
                     content=ft.Column([
-                        ft.Image(src=f"/logo_eklipse.png", width=220, height=200),
+                        ft.Image(src=f"/logo_eklipse.png", width=220, height=150),
                         ft.ElevatedButton(
                             content= ft.Container(
-                                width=200,
-                                height=50,
+                                width=250,
+                                height=45,
                                 alignment=ft.alignment.center,
                                 content=ft.Text("RECTIFICACIÓN", color=ft.colors.BLACK, size=15),
                             ),
@@ -53,7 +55,7 @@ class Menu(ft.Container):
                         ft.ElevatedButton(
                             content= ft.Container(
                                 width=200,
-                                height=50,
+                                height=45,
                                 alignment=ft.alignment.center,
                                 content=ft.Text("MENSUAL", color=ft.colors.BLACK, size=15),
                             ),
@@ -63,7 +65,7 @@ class Menu(ft.Container):
                         ft.ElevatedButton(
                             content= ft.Container(
                                 width=200,
-                                height=50,
+                                height=45,
                                 alignment=ft.alignment.center,
                                 content=ft.Text("COMPRA LOCAL", color=ft.colors.BLACK, size=15),
                             ),
@@ -73,7 +75,7 @@ class Menu(ft.Container):
                         ft.ElevatedButton(
                             content= ft.Container(
                                 width=200,
-                                height=50,
+                                height=45,
                                 alignment=ft.alignment.center,
                                 content=ft.Text("BODEGA", color=ft.colors.BLACK, size=15),
                             ),
@@ -83,14 +85,25 @@ class Menu(ft.Container):
                         ft.ElevatedButton(
                             content= ft.Container(
                                 width=200,
-                                height=50,
+                                height=45,
                                 alignment=ft.alignment.center,
                                 content=ft.Text("REPOSICIONES", color=ft.colors.BLACK, size=15),
                             ),
                             style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
                             on_click=self.show_reposiciones
-                        )
-                    ])
+                        ),
+                        ft.ElevatedButton(
+                            content= ft.Container(
+                                width=200,
+                                height=45,
+                                alignment=ft.alignment.center,
+                                content=ft.Text("UNIFICAR", color=ft.colors.WHITE, size=15),
+                            ),
+                            style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
+                            bgcolor='#FB4308',
+                            on_click=self.show_unificar
+                        ),
+                    ], alignment=ft.MainAxisAlignment.START),
                 ),
                 main_content # Inicialmente mostrar la vista de Consolidado
             ])
@@ -115,5 +128,9 @@ class Menu(ft.Container):
         self.update()
     def show_bodega(self, button):
         self.main_content = Bodega()
+        self.content = self.create_row(self.main_content)
+        self.update()
+    def show_unificar(self,buton):
+        self.main_content = Unificar()
         self.content = self.create_row(self.main_content)
         self.update()
