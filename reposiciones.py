@@ -7,7 +7,7 @@ class Reposiciones(ft.Container):
     directorio = ft.Text("")
     txt_salida = ft.Text("")
     txt_reposiciones = ft.TextField(label="Ingrese la ruta de los archivos", multiline=True, bgcolor=ft.colors.WHITE)
-    txt_nombre_archivo = ft.TextField(label="Ingrese el nombre del archivo a crear", multiline=False, bgcolor=ft.colors.WHITE)
+    txt_nombre_archivo = ft.TextField(label="Ingrese la ruta del archivo a guardar", multiline=False, bgcolor=ft.colors.WHITE)
     def __init__(self):
         super().__init__(
             width=750, 
@@ -77,6 +77,7 @@ class Reposiciones(ft.Container):
         try:
             txt_archivos = self.txt_reposiciones.value
             self.txt_salida.value = self.txt_nombre_archivo.value
+            self.txt_salida.value = self.txt_salida.value.replace('"', '')
             lista_archivos = txt_archivos.splitlines()
             lista_archivos = [archivo.replace('"', '') for archivo in lista_archivos]
 
@@ -119,12 +120,19 @@ class Reposiciones(ft.Container):
         self.creacion_archivo(df)
 
     def creacion_archivo(self, df):
-        ruta = self.directorio.value
-        print(ruta)
-        nombre = self.txt_salida.value
-        print(nombre)
-        nombre_archivo = ruta + '\\' + nombre + '.xlsx'
+        if self.es_ruta(self.txt_salida.value):
+            df_anterior = pd.read_excel(self.txt_salida.value, sheet_name='Guia de Estatus')
+            df = pd.concat([df_anterior, df])
+            nombre_archivo = self.txt_salida.value
+        else:   
+            ruta = self.directorio.value
+            print(ruta)
+            nombre = self.txt_salida.value
+            print(nombre)
+            nombre_archivo = ruta + '\\' + nombre + '.xlsx'
 
         with pd.ExcelWriter(nombre_archivo) as writer:
-            df.to_excel(writer, sheet_name='REPOSICIONES', index=False)
-
+            df.to_excel(writer, sheet_name='Guia de Estatus', index=False)
+            
+    def es_ruta(self,texto):
+        return os.path.exists(texto)

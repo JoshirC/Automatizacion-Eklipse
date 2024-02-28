@@ -92,9 +92,11 @@ class Mensual(ft.Container):
     
     def dataFrame(self, archivo):
         dfs = []
+        dfx = []
         for i in range(len(archivo)):
         #LECTURA DE ARCHIVOS EN HOJA DE PRODUCTOS
             df_productos = pd.read_excel(archivo[i],dtype={'COD. PRODUCTO': str} ,sheet_name='PRODUCTOS')
+            dfx.append(df_productos)
         #MODELADO DE DATAFRAME
             df_productos = df_productos[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD',df_productos.columns[5], 'CENTRO', 'MES']]
             df_productos['SEMANA'] = df_productos[df_productos.columns[4]].name
@@ -106,6 +108,7 @@ class Mensual(ft.Container):
             dfs.append(df_productos)
         #LECTURA DE ARCHIVOS EN HOJA ESPECIALES
             df_especiales = pd.read_excel(archivo[i],dtype={'COD. PRODUCTO': str}, sheet_name='ESPECIALES')
+            dfx.append(df_especiales)
         #MODELADO DE DATAFRAME
             df_especiales = df_especiales[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD',df_especiales.columns[5], 'CENTRO', 'MES']]
             df_especiales['SEMANA'] = df_especiales[df_especiales.columns[4]].name
@@ -117,10 +120,11 @@ class Mensual(ft.Container):
         #NOMBRE DE LA RUTA DE LOS ARCHIVOS
             self.directorio.value = os.path.dirname(archivo[i])
         df = pd.concat(dfs)
+        df2 = pd.concat(dfx)
         print('------> LECTURA DE ARCHIVOS <------')
-        self.modelado(df)
+        self.modelado(df,df2)
 
-    def modelado(self,df):
+    def modelado(self,df,df2):
     #VARIABLES GLOBALES
         cat_1 = ['ABARROTES','BEBESTIBLES', 'CONFITERIA', 'DESECHABLES', 'EPP', 'MATERIALES DE LIMPIEZA', 'ART ESCRITORIO', 'ART KIOSCO']
         cat_2 = ['AVES', 'CECINAS','CERDO','FRIZADOS', 'FRUTA Y VERDURA', 'HUEVOS Y LACTEOS', 'PANADERIA', 'PESCADOS Y MARISCOS','VACUNO','PRE-ELABORADOS','PLATOS PREPARADOS','X']
@@ -132,6 +136,7 @@ class Mensual(ft.Container):
 
     #MODELADO DE DATAFRAME PARA DETALLE ESTADISTICO
         df_data = self.dataFrameEstadistico(df)
+        df_data_2 = self.dataFrameCostos(df2)
 
     #TRANSFORMACION DE COLUMNAS
         df = df.pivot_table(index=['FAMILIA','COD. PRODUCTO','DESCRIPCION PRODUCTO','UNIDAD','CATEGORIA'],columns='CENTRO',values='RECTIFICACION').reset_index()
@@ -155,8 +160,18 @@ class Mensual(ft.Container):
 
     #CREACION DE ARCHIVO
         print('------> MODELADO DE ARCHIVO <------')
-        self.creacion_archivo(df,df_data,df_aprobacion)
-        
+        self.creacion_archivo(df,df_data, df_data_2,df_aprobacion)
+    
+    def dataFrameCostos(self,df):
+        df = df[['COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'Semana 1', 'Semana 2', 'Semana 3', 'Semana 4', 'Semana 5','PRECIO $' ,'CENTRO', 'MES']]
+        df = df.melt(id_vars=['COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'PRECIO $', 'CENTRO', 'MES'],
+             value_vars=['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4', 'Semana 5'],
+             var_name='SEMANA',
+             value_name='CANTIDAD')
+        df.dropna(subset=['CANTIDAD'], inplace=True)
+        df['PRECIO TOTAL'] = df['CANTIDAD'] * df['PRECIO $']
+        df=df[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO','CANTIDAD', 'CENTRO', 'MES', 'PRECIO $', 'PRECIO TOTAL']]
+        return df
     def dataFrameEstadistico(self,df):
         df = df[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'RECTIFICACION', 'CENTRO', 'MES', 'CATEGORIA', "SALIDA"]]
         df.sort_values('DESCRIPCION PRODUCTO', inplace=True)
@@ -164,7 +179,7 @@ class Mensual(ft.Container):
         print('------> MODELADO ESTADISTICO <------')
         return df
     
-    def creacion_archivo(self,df,df_data,df_aprobacion):
+    def creacion_archivo(self,df,df_data,df_data_2,df_aprobacion):
         print('------> CREACION DE ARCHIVO <------')
     #CREACION DE RUTA Y NOMBRE DE ARCHIVO
         ruta = self.directorio.value
@@ -175,3 +190,4 @@ class Mensual(ft.Container):
             df.to_excel(writer, sheet_name='Detalle Consolidado', index=False)
             df_aprobacion.to_excel(writer, sheet_name='Pendientes Aprobación', index=False)
             df_data.to_excel(writer, sheet_name='Modelado Estadistico', index=False)
+            df_data_2.to_excel(writer, sheet_name='Modelado Costos Mensual', index=False)

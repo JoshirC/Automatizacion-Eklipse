@@ -2,7 +2,7 @@ import flet as ft
 
 from menu import Menu
 def main(page: ft.Page):
-    page.title = "EKLIPSE"
+    page.title = "EKLIPSE - Sistema de Información de Compras y Reposiciones"
     page.window_width = 1000
     page.window_height = 600
     page.window_resizable = False

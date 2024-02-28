@@ -14,12 +14,12 @@ class Menu(ft.Container):
            #bgcolor=ft.colors.BLUE
             content=ft.Column([
                 ft.Container(
-                    content=ft.Image(src=f"/images/fondo.jpg", width=700, height=400)
+                    content=ft.Image(src=f"/fondo.jpg", width=700, height=400)
                 ),
                 ft.Text("Bienvenido a EKLIPSE", size=60, weight=ft.FontWeight.W_900, selectable=True), #Titulo
                 ft.Row([
                     ft.Icon(ft.icons.COPYRIGHT_SHARP, size=15, color=ft.colors.BLACK),
-                    ft.Text("2024 - Joshir Contreras", size=12, color=ft.colors.BLACK),
+                    ft.Text("2024 - Desarrollado por Joshir", size=12, color=ft.colors.BLACK),
                     ft.Icon(ft.icons.EMAIL_OUTLINED, size=15, color=ft.colors.BLACK),
                     ft.Text("joshir.contreras@gmail.com", size=12, color=ft.colors.BLACK),
                 ]),
@@ -39,7 +39,7 @@ class Menu(ft.Container):
                     bgcolor='#FF8412',
                     padding=15,
                     content=ft.Column([
-                        ft.Image(src=f"/images/logo_eklipse.png", width=220, height=200),
+                        ft.Image(src=f"/logo_eklipse.png", width=220, height=200),
                         ft.ElevatedButton(
                             content= ft.Container(
                                 width=200,
