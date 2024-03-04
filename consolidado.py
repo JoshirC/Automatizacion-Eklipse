@@ -7,7 +7,7 @@ from assets.modals import modal_error, modal_correcto, modal_inicial
 class Consolidado(ft.Container):
     directorio = ft.Text("")
     txt_salida = ft.Text("")
-    txt_consolidado = ft.TextField(label="Ingrese la ruta de los archivos", multiline=True, bgcolor=ft.colors.WHITE)
+    txt_consolidado = ft.TextField(label="Ingrese la ruta de los archivos a consolidar", multiline=True, bgcolor=ft.colors.WHITE)
     txt_nombre_archivo = ft.TextField(label="Ingrese el nombre del archivo a crear", multiline=False, bgcolor=ft.colors.WHITE,)
 
     def __init__(self):
@@ -55,7 +55,7 @@ class Consolidado(ft.Container):
                 padding=15,
                 alignment=ft.alignment.center,
                 content=ft.Column([
-                    ft.Text("Archivo Consolidado", size=20),
+                    ft.Text("Archivo Salida Consolidado", size=20),
                     ft.Container(
                         width=680,
                         height=80,

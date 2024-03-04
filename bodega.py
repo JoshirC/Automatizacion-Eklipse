@@ -51,7 +51,7 @@ class Bodega(ft.Container):
                 padding=15,
                 alignment=ft.alignment.center,
                 content=ft.Column([
-                    ft.Text("Archivo Bodega", size=20),
+                    ft.Text("Archivo Salida Bodega", size=20),
                     ft.Container(
                         width=680,
                         height=80,

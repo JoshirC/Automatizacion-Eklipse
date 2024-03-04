@@ -6,7 +6,7 @@ from assets.modals import modal_error, modal_correcto, modal_inicial
 class Mensual(ft.Container):
     directorio = ft.Text("")
     txt_salida = ft.Text("")
-    txt_mensual = ft.TextField(label="Ingrese la ruta de los archivos", multiline=True, bgcolor=ft.colors.WHITE)
+    txt_mensual = ft.TextField(label="Ingrese la ruta de los archivos a consolidar", multiline=True, bgcolor=ft.colors.WHITE)
     txt_nombre_archivo = ft.TextField(label="Ingrese el nombre del archivo a crear", multiline=False, bgcolor=ft.colors.WHITE)
     def __init__(self):
         super().__init__(

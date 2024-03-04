@@ -7,7 +7,7 @@ class Reposiciones(ft.Container):
     directorio = ft.Text("")
     txt_salida = ft.Text("")
     txt_reposiciones = ft.TextField(label="Ingrese la ruta de los archivos", multiline=True, bgcolor=ft.colors.WHITE)
-    txt_nombre_archivo = ft.TextField(label="Ingrese la ruta del archivo a guardar", multiline=False, bgcolor=ft.colors.WHITE)
+    txt_nombre_archivo = ft.TextField(label="Ingrese el nombre del archivo a crear o la ruta de un archivo existente", multiline=False, bgcolor=ft.colors.WHITE)
     def __init__(self):
         super().__init__(
             width=750, 

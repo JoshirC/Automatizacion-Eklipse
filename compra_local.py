@@ -6,7 +6,7 @@ from  assets.modals import modal_error, modal_correcto, modal_inicial
 class CompraLocal(ft.Container):
     directorio = ft.Text("")
     txt_salida = ft.Text("")
-    txt_compra_local = ft.TextField(label="Ingrese la ruta de los archivos", multiline=True, bgcolor=ft.colors.WHITE)
+    txt_compra_local = ft.TextField(label="Ingrese la ruta de los archivos a consolidar", multiline=True, bgcolor=ft.colors.WHITE)
     txt_nombre_archivo = ft.TextField(label="Ingrese el nombre del archivo a crear", multiline=False, bgcolor=ft.colors.WHITE) 
     def __init__(self):
         super().__init__(
@@ -68,7 +68,7 @@ class CompraLocal(ft.Container):
                     width=650,
                     height=50,
                     alignment=ft.alignment.center,
-                    content=ft.Text("Generar Compra Local", color=ft.colors.WHITE, size=20),
+                    content=ft.Text("Generar Consolidado Compra Local", color=ft.colors.WHITE, size=20),
                 ),
                 style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
                 bgcolor="#FF8412",
