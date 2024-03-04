@@ -132,7 +132,7 @@ class Reposiciones(ft.Container):
             nombre_archivo = ruta + '\\' + nombre + '.xlsx'
 
         with pd.ExcelWriter(nombre_archivo) as writer:
-            df.to_excel(writer, sheet_name='Guia de Estatus', index=False)
+            df.to_excel(writer, sheet_name='Guia de Estatus', dtype={'COD. PRODUCTO': str}, index=False)
             
     def es_ruta(self,texto):
         return os.path.exists(texto)
