@@ -140,6 +140,8 @@ class Unificar(ft.Container):
         if self.es_ruta(self.txt_salida.value):
             df_co = pd.read_excel(self.txt_salida.value,dtype={'COD. PRODUCTO': str}, sheet_name='MD Bodega')
             df_cl = pd.read_excel(self.txt_salida.value,dtype={'COD. PRODUCTO': str}, sheet_name='MD Compra Local')
+            df_co = df_co[df_co['RECTIFICADO'] != 0]
+            df_cl = df_cl[df_cl['RECTIFICADO'] != 0]
 
             df_consolidado = pd.concat([df_co, df_consolidado])
             df_compra_local = pd.concat([df_cl, df_compra_local])

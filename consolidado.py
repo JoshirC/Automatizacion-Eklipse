@@ -98,18 +98,21 @@ class Consolidado(ft.Container):
         #LECTURA DE ARCHIVO EN HOJA PRODUCTOS
             df_producto = pd.read_excel(archivo[i], dtype={'COD. PRODUCTO': str}, sheet_name='PRODUCTOS')
         #MODELADO DE DATAFRAME
-            df_producto = df_producto[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'RECTIFICACION', 'CENTRO', 'SEMANA', 'MES']]
+            df_producto = df_producto[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'RECTIFICACION', 'CENTRO', 'SEMANA', 'MES', 'CODIGO']]
             df_producto['CATEGORIA'] = "PRODUCTO"
             df_producto['RECTIFICACION'].astype(float)
             df_producto = df_producto.dropna(subset=['RECTIFICACION'])
+            df_producto = df_producto[df_producto['RECTIFICACION'] != 0]
+
             dfs.append(df_producto)
         #LECTURA DE ARCHIVO EN HOJA ESPECIALES
             df_especiales = pd.read_excel(archivo[i], dtype={'COD. PRODUCTO': str}, sheet_name='ESPECIALES')
         #MODELADO DE DATAFRAME
-            df_especiales = df_especiales[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'RECTIFICACION', 'CENTRO', 'SEMANA', 'MES']]
+            df_especiales = df_especiales[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'RECTIFICACION', 'CENTRO', 'SEMANA', 'MES','CODIGO']]
             df_especiales['CATEGORIA'] = "ESPECIAL"
             df_especiales['RECTIFICACION'].astype(float)
             df_especiales = df_especiales.dropna(subset=['RECTIFICACION'])
+            df_especiales = df_especiales[df_especiales['RECTIFICACION'] != 0]
             dfs.append(df_especiales)
         #NOMBRE DE LA RUTA DE LOS ARCHIVOS
             self.directorio.value = os.path.dirname(archivo[i])
@@ -155,7 +158,7 @@ class Consolidado(ft.Container):
         self.creacion_archivo(df,df_data,df_aprobacion)
         
     def dataFrameEstadistico(self,df):
-        df = df[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'RECTIFICACION', 'CENTRO', 'MES', 'CATEGORIA', "SALIDA"]]
+        df = df[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'RECTIFICACION', 'CENTRO','CODIGO', 'MES', 'CATEGORIA', "SALIDA"]]
         df.sort_values('DESCRIPCION PRODUCTO', inplace=True)
         df.dropna(subset=['RECTIFICACION'], inplace=True)
         print('------> MODELADO ESTADISTICO <------')

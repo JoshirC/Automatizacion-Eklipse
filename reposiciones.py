@@ -116,6 +116,7 @@ class Reposiciones(ft.Container):
         df['FECHA DESPACHO'] = ''
         df['COMENTARIOS'] = pd.Series(dtype=object)
         df.dropna(subset=['CANTIDAD'], inplace=True)
+        df = df[df['CANTIDAD'] != 0]
         
         self.creacion_archivo(df)
 
