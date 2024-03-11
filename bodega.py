@@ -91,7 +91,7 @@ class Bodega(ft.Container):
             self.update()
     def dataFrame(self, txt_ruta):
     #LECTURA DE ARCHIVO EN HOJA DETALLE CONSOLIDADO
-        df = pd.read_excel(txt_ruta, sheet_name="Detalle Consolidado")
+        df = pd.read_excel(txt_ruta, dtype={'COD. PRODUCTO': str},sheet_name="Detalle Consolidado")
     #CALCULO DE COLUMNAS
         n_columnas = len(df.columns)
         n_columnas = n_columnas - 1
@@ -101,7 +101,7 @@ class Bodega(ft.Container):
         nombre_archivo = ruta + "\\" + nombre + ".xlsx"
     #EXPORTACION DE ARCHIVO
         with pd.ExcelWriter(nombre_archivo) as writer:
-            for i in range(5, n_columnas):
+            for i in range(6, n_columnas):
                 df_final = df[['FAMILIA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO','UNIDAD',df.columns[i]]].dropna()
                 df_final.to_excel(writer, sheet_name= df.columns[i], index=False)
 

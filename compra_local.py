@@ -101,7 +101,7 @@ class CompraLocal(ft.Container):
             df_producto = pd.read_excel(archivo[i],dtype={'COD. PRODUCTO': str}, sheet_name='PRODUCTOS')
         
         #MODELADO DE DATAFRAME
-            df_producto = df_producto[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'CANT. TOTAL', 'CENTRO', 'SEMANA','MES']]
+            df_producto = df_producto[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'CANT. TOTAL', 'CENTRO', 'CODIGO', 'SEMANA','MES']]
             df_producto['FAMILIA'] = df_producto['FAMILIA'].fillna('X')
             df_producto['COD. PRODUCTO'] = df_producto['COD. PRODUCTO'].fillna('X')
             df_producto['CAN. TOTAL'] = df_producto['CANT. TOTAL'].astype(float)
@@ -128,7 +128,7 @@ class CompraLocal(ft.Container):
         df_compra_local = df.sort_values(by=['FAMILIA', 'DESCRIPCION PRODUCTO'])
 
     #MODELADO ESTADISTICO
-        df_estadistico = df_compra_local[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO','CANT. TOTAL', 'CENTRO', 'MES']]
+        df_estadistico = df_compra_local[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO','CANT. TOTAL', 'CENTRO', 'CODIGO', 'MES']]
         df_estadistico = df_estadistico.rename(columns={'CANT. TOTAL': 'RECTIFICACION'})
         df_estadistico['CATEGORIA'] = "PRODUCTOS CL"
         df_estadistico['SALIDA'] = "LOCAL"
@@ -144,7 +144,7 @@ class CompraLocal(ft.Container):
         self.creacion_archivo(df_estadistico, centros, name_centros)
 
     def dataFrameEstadistico(self, df):
-        df = df[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'RECTIFICACION', 'CENTRO', 'MES', 'CATEGORIA', "SALIDA"]]
+        df = df[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'RECTIFICACION', 'CENTRO', 'CODIGO', 'MES', 'CATEGORIA', "SALIDA"]]
         df.sort_values('DESCRIPCION PRODUCTO', inplace=True)
         df.dropna(subset=['RECTIFICACION'], inplace=True)
         print('------> MODELADO ESTADISTICO <------')

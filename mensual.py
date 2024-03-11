@@ -98,7 +98,7 @@ class Mensual(ft.Container):
             df_productos = pd.read_excel(archivo[i],dtype={'COD. PRODUCTO': str} ,sheet_name='PRODUCTOS')
             dfx.append(df_productos)
         #MODELADO DE DATAFRAME
-            df_productos = df_productos[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD',df_productos.columns[5], 'CENTRO','CODIGO', 'MES']]
+            df_productos = df_productos[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD',df_productos.columns[5],'PRECIO $','CENTRO','CODIGO', 'MES']]
             df_productos['SEMANA'] = df_productos[df_productos.columns[4]].name
             df_productos = df_productos.rename(columns={df_productos[df_productos.columns[4]].name: 'RECTIFICACION'})
             df_productos['RECTIFICACION'].astype(float)
@@ -112,7 +112,7 @@ class Mensual(ft.Container):
             df_especiales = pd.read_excel(archivo[i],dtype={'COD. PRODUCTO': str}, sheet_name='ESPECIALES')
             dfx.append(df_especiales)
         #MODELADO DE DATAFRAME
-            df_especiales = df_especiales[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD',df_especiales.columns[5], 'CENTRO','CODIGO', 'MES']]
+            df_especiales = df_especiales[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD',df_especiales.columns[5],'PRECIO $', 'CENTRO','CODIGO', 'MES']]
             df_especiales['SEMANA'] = df_especiales[df_especiales.columns[4]].name
             df_especiales = df_especiales.rename(columns={df_especiales[df_especiales.columns[4]].name: 'RECTIFICACION'})
             df_especiales['RECTIFICACION'].astype(float)
@@ -123,7 +123,7 @@ class Mensual(ft.Container):
         #NOMBRE DE LA RUTA DE LOS ARCHIVOS
             self.directorio.value = os.path.dirname(archivo[i])
         #LECTURA DE ARCHIVO CALENDARIO
-            df_calendario = pd.read_excel(archivo[i], sheet_name='CALENDARIO', header=15)
+            df_calendario = pd.read_excel(archivo[i], sheet_name='PORTADA', header=15)
 
         df = pd.concat(dfs)
         df2 = pd.concat(dfx)
@@ -145,7 +145,7 @@ class Mensual(ft.Container):
         df_data_2 = self.dataFrameCostos(df2, df_calendario)
 
     #TRANSFORMACION DE COLUMNAS
-        df = df.pivot_table(index=['FAMILIA','COD. PRODUCTO','DESCRIPCION PRODUCTO','UNIDAD','CATEGORIA'],columns='CENTRO',values='RECTIFICACION').reset_index()
+        df = df.pivot_table(index=['FAMILIA','COD. PRODUCTO','DESCRIPCION PRODUCTO','UNIDAD','CATEGORIA','PRECIO $'],columns='CENTRO',values='RECTIFICACION').reset_index()
         df_aprobacion = df[df['CATEGORIA'] != 'PRODUCTO'].reset_index(drop=True)
 
     #ORDEN DEL DATAFRAME
@@ -177,14 +177,13 @@ class Mensual(ft.Container):
         df.dropna(subset=['CANTIDAD'], inplace=True)
         df['PRECIO TOTAL'] = df['CANTIDAD'] * df['PRECIO $']
         df=df[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO','CANTIDAD', 'CENTRO', 'CODIGO', 'MES', 'PRECIO $', 'PRECIO TOTAL']]
-        print(df)
         # Crear un diccionario que mapee los valores de 'SEMANA' a las correspondientes columnas de df_calendario
         mapeo_semanas = {
-        'Semana 1': df_calendario['Semana 1'].iloc[0],
-        'Semana 2': df_calendario['Semana 2'].iloc[0],
-        'Semana 3': df_calendario['Semana 3'].iloc[0],
-        'Semana 4': df_calendario['Semana 4'].iloc[0],
-        'Semana 5': df_calendario['Semana 5'].iloc[0]
+        'Semana 1': df_calendario['N° Semana 1'].iloc[0],
+        'Semana 2': df_calendario['N° Semana 2'].iloc[0],
+        'Semana 3': df_calendario['N° Semana 3'].iloc[0],
+        'Semana 4': df_calendario['N° Semana 4'].iloc[0],
+        'Semana 5': df_calendario['N° Semana 5'].iloc[0]
         }
 
         # Mapear los valores de 'SEMANA' utilizando el diccionario
@@ -193,10 +192,10 @@ class Mensual(ft.Container):
         print(df)   
         return df
     def dataFrameEstadistico(self,df, df_calendario):
-        df = df[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'RECTIFICACION', 'CENTRO','CODIGO', 'MES', 'CATEGORIA', "SALIDA"]]
+        df = df[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'RECTIFICACION','PRECIO $', 'CENTRO','CODIGO', 'MES', 'CATEGORIA', "SALIDA"]]
         df.sort_values('DESCRIPCION PRODUCTO', inplace=True)
         df.dropna(subset=['RECTIFICACION'], inplace=True)
-        df['SEMANA'] = df_calendario['Semana 1'].iloc[0]
+        df['SEMANA'] = df_calendario['N° Semana 1'].iloc[0]
         print('------> MODELADO ESTADISTICO <------')
         return df
     

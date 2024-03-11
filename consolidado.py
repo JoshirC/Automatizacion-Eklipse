@@ -98,7 +98,7 @@ class Consolidado(ft.Container):
         #LECTURA DE ARCHIVO EN HOJA PRODUCTOS
             df_producto = pd.read_excel(archivo[i], dtype={'COD. PRODUCTO': str}, sheet_name='PRODUCTOS')
         #MODELADO DE DATAFRAME
-            df_producto = df_producto[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'RECTIFICACION', 'CENTRO', 'SEMANA', 'MES', 'CODIGO']]
+            df_producto = df_producto[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'RECTIFICACION','PRECIO $', 'CENTRO', 'SEMANA', 'MES', 'CODIGO']]
             df_producto['CATEGORIA'] = "PRODUCTO"
             df_producto['RECTIFICACION'].astype(float)
             df_producto = df_producto.dropna(subset=['RECTIFICACION'])
@@ -108,7 +108,7 @@ class Consolidado(ft.Container):
         #LECTURA DE ARCHIVO EN HOJA ESPECIALES
             df_especiales = pd.read_excel(archivo[i], dtype={'COD. PRODUCTO': str}, sheet_name='ESPECIALES')
         #MODELADO DE DATAFRAME
-            df_especiales = df_especiales[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'RECTIFICACION', 'CENTRO', 'SEMANA', 'MES','CODIGO']]
+            df_especiales = df_especiales[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'RECTIFICACION','PRECIO $', 'CENTRO', 'SEMANA', 'MES','CODIGO']]
             df_especiales['CATEGORIA'] = "ESPECIAL"
             df_especiales['RECTIFICACION'].astype(float)
             df_especiales = df_especiales.dropna(subset=['RECTIFICACION'])
@@ -134,7 +134,7 @@ class Consolidado(ft.Container):
         df_data = self.dataFrameEstadistico(df)
 
     #TRANSFORMACION DE COLUMNAS
-        df = df.pivot_table(index=['FAMILIA','COD. PRODUCTO','DESCRIPCION PRODUCTO','UNIDAD','CATEGORIA'],columns='CENTRO',values='RECTIFICACION').reset_index()
+        df = df.pivot_table(index=['FAMILIA','COD. PRODUCTO','DESCRIPCION PRODUCTO','UNIDAD','CATEGORIA','PRECIO $'],columns='CENTRO',values='RECTIFICACION').reset_index()
         df_aprobacion = df[df['CATEGORIA'] != 'PRODUCTO'].reset_index(drop=True)
 
     #ORDEN DEL DATAFRAME
@@ -150,7 +150,7 @@ class Consolidado(ft.Container):
         df_aprobacion = pd.concat([grupo1,grupo2]).reset_index(drop=True)
 
     #VARIABLE TOTAL
-        df_total = df.drop(columns=['FAMILIA','COD. PRODUCTO','DESCRIPCION PRODUCTO','UNIDAD','CATEGORIA'])
+        df_total = df.drop(columns=['FAMILIA','COD. PRODUCTO','DESCRIPCION PRODUCTO','UNIDAD','CATEGORIA','PRECIO $'])
         df['TOTAL'] = df_total.sum(axis=1)
 
     #CREACION DE ARCHIVO
@@ -158,7 +158,7 @@ class Consolidado(ft.Container):
         self.creacion_archivo(df,df_data,df_aprobacion)
         
     def dataFrameEstadistico(self,df):
-        df = df[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'RECTIFICACION', 'CENTRO','CODIGO', 'MES', 'CATEGORIA', "SALIDA"]]
+        df = df[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'RECTIFICACION','PRECIO $', 'CENTRO','CODIGO', 'MES', 'CATEGORIA', "SALIDA"]]
         df.sort_values('DESCRIPCION PRODUCTO', inplace=True)
         df.dropna(subset=['RECTIFICACION'], inplace=True)
         print('------> MODELADO ESTADISTICO <------')
