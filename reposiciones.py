@@ -121,19 +121,24 @@ class Reposiciones(ft.Container):
         self.creacion_archivo(df)
 
     def creacion_archivo(self, df):
+        if df.empty:
+            print("No hay datos para escribir en el archivo.")
+            return
+
         if self.es_ruta(self.txt_salida.value):
-            df_anterior = pd.read_excel(self.txt_salida.value, sheet_name='Guia de Estatus')
-            df = pd.concat([df_anterior, df])
+            if os.path.exists(self.txt_salida.value):
+                df_anterior = pd.read_excel(self.txt_salida.value, sheet_name='Guia de Estatus')
+                df = pd.concat([df_anterior, df])
             nombre_archivo = self.txt_salida.value
         else:   
             ruta = self.directorio.value
-            print(ruta)
             nombre = self.txt_salida.value
-            print(nombre)
-            nombre_archivo = ruta + '\\' + nombre + '.xlsx'
+            nombre_archivo = os.path.join(ruta, nombre + '.xlsx')
 
         with pd.ExcelWriter(nombre_archivo) as writer:
-            df.to_excel(writer, sheet_name='Guia de Estatus', dtype={'COD. PRODUCTO': str}, index=False)
-            
-    def es_ruta(self,texto):
-        return os.path.exists(texto)
+            print('------> CREACION DE ARCHIVO <------')
+            df.to_excel(writer, sheet_name='Guia de Estatus', index=False)
+
+    def es_ruta(self, texto):
+        return os.path.exists(texto) and texto.endswith('.xlsx')
+
