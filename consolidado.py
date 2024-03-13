@@ -103,7 +103,7 @@ class Consolidado(ft.Container):
             df_producto['CATEGORIA'] = "PRODUCTO"
             df_producto['RECTIFICACION'].astype(float)
             df_producto = df_producto.dropna(subset=['RECTIFICACION'])
-            df_producto = df_producto[df_producto['RECTIFICACION'] != 0]
+            #df_producto = df_producto[df_producto['RECTIFICACION'] != 0]
 
             dfs.append(df_producto)
         #LECTURA DE ARCHIVO EN HOJA ESPECIALES
@@ -113,8 +113,9 @@ class Consolidado(ft.Container):
             df_especiales['CATEGORIA'] = "ESPECIAL"
             df_especiales['RECTIFICACION'].astype(float)
             df_especiales = df_especiales.dropna(subset=['RECTIFICACION'])
-            df_especiales = df_especiales[df_especiales['RECTIFICACION'] != 0]
+            #df_especiales = df_especiales[df_especiales['RECTIFICACION'] != 0]
             dfs.append(df_especiales)
+
         #NOMBRE DE LA RUTA DE LOS ARCHIVOS
             self.directorio.value = os.path.dirname(archivo[i])
         df = pd.concat(dfs)
@@ -129,19 +130,20 @@ class Consolidado(ft.Container):
     #MODELADO DE DATAFRAME
         df['FAMILIA'] = df['FAMILIA'].fillna('X')
         df['COD. PRODUCTO'] = df['COD. PRODUCTO'].fillna('X')
+        df['UNIDAD'] = df['UNIDAD'].fillna('X')
+        df['PRECIO $'] = df['PRECIO $'].fillna(0)
         df['SALIDA'] = "BODEGA"
 
     #MODELADO DE DATAFRAME PARA DETALLE ESTADISTICO
         df_data = self.dataFrameEstadistico(df)
 
     #TRANSFORMACION DE COLUMNAS
-        df = df.pivot_table(index=['FAMILIA','COD. PRODUCTO','DESCRIPCION PRODUCTO','UNIDAD','CATEGORIA','PRECIO $'],columns='CENTRO',values='RECTIFICACION').reset_index()
-        df_aprobacion = df[df['CATEGORIA'] != 'PRODUCTO'].reset_index(drop=True)
-
+        df_1 = df.pivot_table(index=['FAMILIA','COD. PRODUCTO','DESCRIPCION PRODUCTO','UNIDAD','CATEGORIA','PRECIO $'],columns='CENTRO',values='RECTIFICACION').reset_index()
+        df_aprobacion = df_1[df_1['CATEGORIA'] != 'PRODUCTO']
     #ORDEN DEL DATAFRAME
-        df = df.sort_values(by=['FAMILIA','DESCRIPCION PRODUCTO'])
-        grupo1 = df[df['FAMILIA'].isin(cat_1)]
-        grupo2 = df[df['FAMILIA'].isin(cat_2)]
+        df_2 = df_1.sort_values(by=['FAMILIA','DESCRIPCION PRODUCTO'])
+        grupo1 = df_2[df_2['FAMILIA'].isin(cat_1)]
+        grupo2 = df_2[df_2['FAMILIA'].isin(cat_2)]
 
         df = pd.concat([grupo1,grupo2]).reset_index(drop=True)
 

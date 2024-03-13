@@ -140,6 +140,8 @@ class Mensual(ft.Container):
     #MODELADO DE DATAFRAME
         df['FAMILIA'] = df['FAMILIA'].fillna('X')
         df['COD. PRODUCTO'] = df['COD. PRODUCTO'].fillna('X')
+        df['PRECIO $'] = df['PRECIO $'].fillna(0)
+
         df['SALIDA'] = "BODEGA"
 
     #MODELADO DE DATAFRAME PARA DETALLE ESTADISTICO
