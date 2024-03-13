@@ -2,6 +2,7 @@ import os
 import flet as ft
 import pandas as pd
 
+from estilo_excel import aplicar_estilo_excel
 from  assets.modals import modal_error, modal_correcto, modal_inicial
 class Reposiciones(ft.Container):
     directorio = ft.Text("")
@@ -137,7 +138,7 @@ class Reposiciones(ft.Container):
         with pd.ExcelWriter(nombre_archivo) as writer:
             print('------> CREACION DE ARCHIVO <------')
             df.to_excel(writer, sheet_name='Guia de Estatus', index=False)
-
+        aplicar_estilo_excel(nombre_archivo)
     def es_ruta(self, texto):
         return os.path.exists(texto) and texto.endswith('.xlsx')
     def parse_fecha(self,fecha):

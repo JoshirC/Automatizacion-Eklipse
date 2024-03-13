@@ -1,6 +1,8 @@
 import os
 import flet as ft
 import pandas as pd
+
+from estilo_excel import aplicar_estilo_excel
 from assets.modals import modal_error, modal_correcto, modal_inicial
 
 class Unificar(ft.Container):
@@ -155,5 +157,7 @@ class Unificar(ft.Container):
         with pd.ExcelWriter(nombre_archivo) as writer:
             df_consolidado.to_excel(writer, sheet_name='MD Bodega', index=False)
             df_compra_local.to_excel(writer, sheet_name='MD Compra Local', index=False)
+
+        aplicar_estilo_excel(nombre_archivo)
     def es_ruta(self,texto):
         return os.path.exists(texto)

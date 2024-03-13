@@ -2,6 +2,7 @@ import os
 import flet as ft
 import pandas as pd
 
+from estilo_excel import aplicar_estilo_excel
 from assets.modals import modal_error, modal_correcto, modal_inicial
 class Bodega(ft.Container):
     txt_bodega = ft.TextField(label="Ingrese la ruta del consolidado", multiline=False, bgcolor=ft.colors.WHITE)
@@ -105,4 +106,4 @@ class Bodega(ft.Container):
                 df_final = df[['FAMILIA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO','UNIDAD',df.columns[i]]].dropna()
                 df_final.to_excel(writer, sheet_name= df.columns[i], index=False)
 
-    
+        aplicar_estilo_excel(nombre_archivo)

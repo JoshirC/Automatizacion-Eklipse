@@ -2,6 +2,7 @@ import os
 import flet as ft
 import pandas as pd
 
+from estilo_excel import aplicar_estilo_excel
 from  assets.modals import modal_error, modal_correcto, modal_inicial
 class CompraLocal(ft.Container):
     directorio = ft.Text("")
@@ -163,4 +164,4 @@ class CompraLocal(ft.Container):
             df_estadistico.to_excel(writer, sheet_name='Modelado Estadistico', index=False)
             for i in range(len(centros)):
                 centros[i].to_excel(writer, sheet_name=name_centro[i], index=False)
-   
+        aplicar_estilo_excel(nombre_archivo)

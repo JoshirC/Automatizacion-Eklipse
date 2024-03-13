@@ -1,6 +1,8 @@
 import os
 import flet as ft
 import pandas as pd
+
+from estilo_excel import aplicar_estilo_excel
 from assets.modals import modal_error, modal_correcto, modal_inicial
 
 class Mensual(ft.Container):
@@ -211,3 +213,4 @@ class Mensual(ft.Container):
             df_aprobacion.to_excel(writer, sheet_name='Pendientes Aprobación', index=False)
             df_data.to_excel(writer, sheet_name='Modelado Estadistico', index=False)
             df_data_2.to_excel(writer, sheet_name='Modelado Costos Mensual', index=False)
+        aplicar_estilo_excel(nombre_archivo)
