@@ -96,9 +96,9 @@ class Reposiciones(ft.Container):
         dfs = []
         for i in range(len(archivo)):
         #LECTURA DE ARCHIVOS EN HOJA DE PRODUCTOS
-            df_reposicion = pd.read_excel(archivo[i],dtype={'COD. PRODUCTO': str} ,sheet_name="PRODUCTOS", header=4)
+            df_reposicion = pd.read_excel(archivo[i],dtype={'COD. PRODUCTO': str} ,sheet_name="PRODUCTOS", header=8, date_format='%d/%m/%Y', parse_dates=['FECHA'])
         #MODELADO DEL DATAFRAME
-            df_reposicion = df_reposicion[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'CANTIDAD', 'CENTRO', 'FECHA']]
+            df_reposicion = df_reposicion[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'CANTIDAD', 'CENTRO', 'FECHA', 'OBSERVACIONES CC']]
             dfs.append(df_reposicion)
         #NOMBRE DE LA RUTA DE ARCHIVOS
             self.directorio.value = os.path.dirname(archivo[i])
@@ -127,18 +127,18 @@ class Reposiciones(ft.Container):
 
         if self.es_ruta(self.txt_salida.value):
             if os.path.exists(self.txt_salida.value):
-                df_anterior = pd.read_excel(self.txt_salida.value, sheet_name='Guia de Estatus')
+                df_anterior = pd.read_excel(self.txt_salida.value, sheet_name='Guia de Estatus', date_format='%d/%m/%Y', parse_dates=['FECHA'])
                 df = pd.concat([df_anterior, df])
             nombre_archivo = self.txt_salida.value
         else:   
             ruta = self.directorio.value
             nombre = self.txt_salida.value
             nombre_archivo = os.path.join(ruta, nombre + '.xlsx')
-
         with pd.ExcelWriter(nombre_archivo) as writer:
             print('------> CREACION DE ARCHIVO <------')
             df.to_excel(writer, sheet_name='Guia de Estatus', index=False)
 
     def es_ruta(self, texto):
         return os.path.exists(texto) and texto.endswith('.xlsx')
-
+    def parse_fecha(self,fecha):
+        return pd.to_datetime(fecha, format='%d/%m/%Y')
