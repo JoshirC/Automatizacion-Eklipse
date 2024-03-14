@@ -140,7 +140,13 @@ class Mensual(ft.Container):
     #MODELADO DE DATAFRAME
         df['FAMILIA'] = df['FAMILIA'].fillna('X')
         df['COD. PRODUCTO'] = df['COD. PRODUCTO'].fillna('X')
+        df['UNIDAD'] = df['UNIDAD'].fillna('X')
         df['PRECIO $'] = df['PRECIO $'].fillna(0)
+
+        df2['FAMILIA'] = df2['FAMILIA'].fillna('X')
+        df2['COD. PRODUCTO'] = df2['COD. PRODUCTO'].fillna('X')
+        df2['UNIDAD'] = df2['UNIDAD'].fillna('X')
+        df2['PRECIO $'] = df2['PRECIO $'].fillna(0)
 
         df['SALIDA'] = "BODEGA"
 
@@ -165,7 +171,7 @@ class Mensual(ft.Container):
         df_aprobacion = pd.concat([grupo1,grupo2]).reset_index(drop=True)
 
     #VARIABLE TOTAL
-        df_total = df.drop(columns=['FAMILIA','COD. PRODUCTO','DESCRIPCION PRODUCTO','UNIDAD','CATEGORIA'])
+        df_total = df.drop(columns=['FAMILIA','COD. PRODUCTO','DESCRIPCION PRODUCTO','UNIDAD','CATEGORIA', 'PRECIO $'])
         df['TOTAL'] = df_total.sum(axis=1)
 
     #CREACION DE ARCHIVO
@@ -179,6 +185,8 @@ class Mensual(ft.Container):
              var_name='SEMANA',
              value_name='CANTIDAD')
         df.dropna(subset=['CANTIDAD'], inplace=True)
+        print(df)
+        df = df[df['CANTIDAD'] != 0.0]
         df['PRECIO TOTAL'] = df['CANTIDAD'] * df['PRECIO $']
         df=df[['SEMANA','COD. PRODUCTO', 'DESCRIPCION PRODUCTO','CANTIDAD', 'CENTRO', 'CODIGO', 'MES', 'PRECIO $', 'PRECIO TOTAL']]
         # Crear un diccionario que mapee los valores de 'SEMANA' a las correspondientes columnas de df_calendario

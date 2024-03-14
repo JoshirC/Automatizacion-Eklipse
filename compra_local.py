@@ -102,9 +102,11 @@ class CompraLocal(ft.Container):
             df_producto = pd.read_excel(archivo[i],dtype={'COD. PRODUCTO': str}, sheet_name='PRODUCTOS')
         
         #MODELADO DE DATAFRAME
-            df_producto = df_producto[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'CANT. TOTAL', 'CENTRO', 'CODIGO', 'SEMANA','MES']]
+            df_producto = df_producto[['FAMILIA', 'COD. PRODUCTO', 'DESCRIPCION PRODUCTO', 'UNIDAD', 'PRECIO $', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'CANT. TOTAL', 'CENTRO', 'CODIGO', 'SEMANA','MES']]
             df_producto['FAMILIA'] = df_producto['FAMILIA'].fillna('X')
             df_producto['COD. PRODUCTO'] = df_producto['COD. PRODUCTO'].fillna('X')
+            df_producto['UNIDAD'] = df_producto['UNIDAD'].fillna('X')
+            df_producto['PRECIO $'] = df_producto['PRECIO $'].fillna(0)
             df_producto['CAN. TOTAL'] = df_producto['CANT. TOTAL'].astype(float)
             df_producto = df_producto[df_producto['CANT. TOTAL'] != 0]
 

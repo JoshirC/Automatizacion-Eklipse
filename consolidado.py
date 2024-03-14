@@ -103,7 +103,7 @@ class Consolidado(ft.Container):
             df_producto['CATEGORIA'] = "PRODUCTO"
             df_producto['RECTIFICACION'].astype(float)
             df_producto = df_producto.dropna(subset=['RECTIFICACION'])
-            #df_producto = df_producto[df_producto['RECTIFICACION'] != 0]
+            df_producto = df_producto[df_producto['RECTIFICACION'] != 0]
 
             dfs.append(df_producto)
         #LECTURA DE ARCHIVO EN HOJA ESPECIALES
@@ -113,7 +113,7 @@ class Consolidado(ft.Container):
             df_especiales['CATEGORIA'] = "ESPECIAL"
             df_especiales['RECTIFICACION'].astype(float)
             df_especiales = df_especiales.dropna(subset=['RECTIFICACION'])
-            #df_especiales = df_especiales[df_especiales['RECTIFICACION'] != 0]
+            df_especiales = df_especiales[df_especiales['RECTIFICACION'] != 0]
             dfs.append(df_especiales)
 
         #NOMBRE DE LA RUTA DE LOS ARCHIVOS
