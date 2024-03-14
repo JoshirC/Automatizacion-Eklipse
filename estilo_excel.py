@@ -2,6 +2,16 @@ import openpyxl
 from openpyxl.styles import PatternFill
 
 def calcular_espaciado_columnas(ws):
+    """
+    Calcula el espaciado entre columnas de una hoja de cálculo.
+
+    Args:
+        ws (Worksheet): La hoja de cálculo sobre la cual se realizará el cálculo.
+
+    Returns:
+        dict: Un diccionario con el espaciado entre columnas, donde las claves son las letras de las columnas
+        y los valores son los anchos respectivos.
+    """
     # Obtener el número de columnas con datos
     num_columnas = ws.max_column
 
@@ -14,6 +24,13 @@ def calcular_espaciado_columnas(ws):
 
     return espaciado_entre_columnas
 def aplicar_estilo_excel(nombre_archivo):
+    """
+    Aplica un estilo específico a un archivo de Excel, incluyendo espaciado entre columnas, color al encabezado,
+    y fijación del encabezado.
+
+    Args:
+        nombre_archivo (str): La ruta del archivo de Excel al cual se le aplicará el estilo.
+    """
     # Cargar el archivo Excel
     wb = openpyxl.load_workbook(nombre_archivo)
 

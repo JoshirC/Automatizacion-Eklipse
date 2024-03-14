@@ -5,11 +5,36 @@ import pandas as pd
 from estilo_excel import aplicar_estilo_excel
 from  assets.modals import modal_error, modal_correcto, modal_inicial
 class Reposiciones(ft.Container):
+    """
+    Clase para la gestión de reposiciones.
+
+    Attributes:
+        directorio (ft.Text): Campo de texto para la ruta del directorio.
+        txt_salida (ft.Text): Campo de texto para el nombre del archivo de salida.
+        txt_reposiciones (ft.TextField): Campo de texto para la ruta de los archivos de reposiciones.
+        txt_nombre_archivo (ft.TextField): Campo de texto para el nombre del archivo a crear o la ruta de un archivo existente.
+
+    Methods:
+        __init__: Constructor de la clase.
+        create_reposiciones: Método para crear la vista de gestión de reposiciones.
+        generar_reposiciones: Método para generar las reposiciones.
+        dataFrame: Método para crear el DataFrame de reposiciones.
+        modelado: Método para el modelado de los datos de reposiciones.
+        creacion_archivo: Método para la creación del archivo de reposiciones.
+        es_ruta: Método para verificar si el texto es una ruta de archivo existente.
+        parse_fecha: Método para parsear una fecha al formato de pandas.
+    """
     directorio = ft.Text("")
     txt_salida = ft.Text("")
     txt_reposiciones = ft.TextField(label="Ingrese la ruta de los archivos", multiline=True, bgcolor=ft.colors.WHITE)
     txt_nombre_archivo = ft.TextField(label="Ingrese el nombre del archivo a crear o la ruta de un archivo existente", multiline=False, bgcolor=ft.colors.WHITE)
     def __init__(self):
+        """
+        Constructor de la clase Reposiciones.
+
+        Inicializa la clase con un contenedor de especificaciones predeterminadas y contenido generado por
+        el método create_reposiciones, utilizando un modal inicial.
+        """
         super().__init__(
             width=750, 
             height=600,
@@ -17,6 +42,15 @@ class Reposiciones(ft.Container):
             content= self.create_reposiciones(modal_inicial)
         )
     def create_reposiciones(self, modal):
+        """
+        Método para crear la vista de gestión de reposiciones.
+
+        Args:
+            modal: Modal a mostrar junto con el título.
+
+        Returns:
+            ft.Column: Columna con el contenido de la vista de gestión de reposiciones.
+        """
         return ft.Column([
             ft.Container(
                 width=700,
@@ -75,6 +109,14 @@ class Reposiciones(ft.Container):
             )
         ])
     def generar_reposiciones(self, button):
+        """
+        Método para generar las reposiciones.
+
+        Lee los archivos ingresados, crea un DataFrame consolidado y genera el archivo de salida.
+
+        Args:
+            button: Botón de generación de reposiciones.
+        """
         try:
             txt_archivos = self.txt_reposiciones.value
             self.txt_salida.value = self.txt_nombre_archivo.value
@@ -94,6 +136,14 @@ class Reposiciones(ft.Container):
             self.update()
     
     def dataFrame(self, archivo):
+        """
+        Método para crear el DataFrame de reposiciones.
+
+        Lee los archivos de reposiciones ingresados, realiza el modelado de los datos y los concatena en un DataFrame de reposiciones.
+
+        Args:
+            archivo (list): Lista de rutas de los archivos de reposiciones.
+        """
         dfs = []
         for i in range(len(archivo)):
         #LECTURA DE ARCHIVOS EN HOJA DE PRODUCTOS
@@ -109,7 +159,15 @@ class Reposiciones(ft.Container):
         self.modelado(df)
 
     def modelado(self, df):
-    #MODELADO DE DATAFRAME REPOSICIONES
+        """
+        Método para el modelado de los datos de reposiciones.
+
+        Realiza el modelado de los datos del DataFrame de reposiciones.
+
+        Args:
+            df (DataFrame): DataFrame de reposiciones.
+        """
+        #MODELADO DE DATAFRAME REPOSICIONES
         df['FAMILIA'] = df['FAMILIA'].fillna('X')
         df['COD. PRODUCTO'] = df['COD. PRODUCTO'].fillna('X')
         df['ESTATUS'] = 'SOLICITADO'
@@ -122,6 +180,14 @@ class Reposiciones(ft.Container):
         self.creacion_archivo(df)
 
     def creacion_archivo(self, df):
+        """
+        Método para la creación del archivo de reposiciones.
+
+        Crea el archivo de reposiciones a partir del DataFrame de reposiciones.
+
+        Args:
+            df (DataFrame): DataFrame de reposiciones.
+        """
         if df.empty:
             print("No hay datos para escribir en el archivo.")
             return
@@ -140,6 +206,24 @@ class Reposiciones(ft.Container):
             df.to_excel(writer, sheet_name='Guia de Estatus', index=False)
         aplicar_estilo_excel(nombre_archivo)
     def es_ruta(self, texto):
+        """
+        Método para verificar si el texto es una ruta de archivo existente.
+
+        Args:
+            texto (str): Texto a verificar.
+
+        Returns:
+            bool: True si es una ruta de archivo existente, False de lo contrario.
+        """
         return os.path.exists(texto) and texto.endswith('.xlsx')
     def parse_fecha(self,fecha):
+        """
+        Método para parsear una fecha al formato de pandas.
+
+        Args:
+            fecha (str): Fecha en formato de texto.
+
+        Returns:
+            datetime: Fecha parseada en formato de pandas.
+        """
         return pd.to_datetime(fecha, format='%d/%m/%Y')

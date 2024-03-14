@@ -5,10 +5,28 @@ import pandas as pd
 from estilo_excel import aplicar_estilo_excel
 from assets.modals import modal_error, modal_correcto, modal_inicial
 class Bodega(ft.Container):
+    """
+    Clase que representa la interfaz para generar archivos de consolidado a bodega.
+
+    Attributes:
+        txt_bodega (ft.TextField): Campo de entrada para la ruta del archivo de consolidado.
+        txt_nombre_archivo (ft.TextField): Campo de entrada para el nombre del archivo de salida.
+    Methods:
+        __init__: Constructor de la clase.
+        create_bodega: Método para crear la vista de generación de archivo de consolidado a bodega.
+        generar_bodega: Método para generar el archivo de consolidado a bodega.
+        dataFrame: Método para crear el DataFrame de consolidado a bodega.
+    """
     txt_bodega = ft.TextField(label="Ingrese la ruta del consolidado", multiline=False, bgcolor=ft.colors.WHITE)
     txt_nombre_archivo = ft.TextField(label="Ingrese el nombre del archivo a crear", multiline=False, bgcolor=ft.colors.WHITE,)
 
     def __init__(self):
+        """
+        Inicializa una instancia de la clase Bodega.
+
+        Returns:
+            None
+        """
         super().__init__(
             width=750, 
             height=600,
@@ -17,6 +35,15 @@ class Bodega(ft.Container):
             content= self.create_bodega(modal_inicial)
         )
     def create_bodega(self, modal):
+        """
+        Crea la interfaz de usuario para generar archivos de consolidado a bodega.
+
+        Args:
+            modal: Modal que se muestra junto al título.
+
+        Returns:
+            ft.Column: Columna que contiene la interfaz de usuario.
+        """
         return ft.Column([
             ft.Container(
                 width=700,
@@ -75,6 +102,15 @@ class Bodega(ft.Container):
             ),
         ])
     def generar_bodega(self, button):
+        """
+        Genera el archivo de consolidado a bodega.
+
+        Args:
+            button: Botón que activa la generación del archivo.
+
+        Returns:
+            None
+        """
         try:
         #MODIFICACION DE RUTA
             txt_ruta = self.txt_bodega.value
@@ -91,6 +127,15 @@ class Bodega(ft.Container):
             self.content = self.create_bodega(modal_error)
             self.update()
     def dataFrame(self, txt_ruta):
+        """
+        Genera un DataFrame a partir del archivo de consolidado.
+
+        Args:
+            txt_ruta (str): Ruta del archivo de consolidado.
+
+        Returns:
+            None
+        """
     #LECTURA DE ARCHIVO EN HOJA DETALLE CONSOLIDADO
         df = pd.read_excel(txt_ruta, dtype={'COD. PRODUCTO': str},sheet_name="Detalle Consolidado")
     #CALCULO DE COLUMNAS
