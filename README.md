@@ -8,11 +8,11 @@ Este proyecto esta enfocado en manejar las plantillas de los productos y/o repos
 - Python
 
 ### Librerias importadas
-- openpyxl
-- Pandas
+- openpyxl ( https://openpyxl.readthedocs.io/en/stable/index.html )
+- Pandas ( https://pandas.pydata.org/pandas-docs/stable/index.html )
 
 ### Entorno de desarrollo
-- Flet
+- Flet ( https://flet.dev )
 
 ### Manual de uso
 Aqui ira el pdf con el manual
