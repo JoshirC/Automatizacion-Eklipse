@@ -2,6 +2,16 @@ import flet as ft
 
 from menu import Menu
 def main(page: ft.Page):
+    """
+    Función principal que configura y ejecuta la aplicación EKLIPSE.
+
+    Args:
+        page (ft.Page): Instancia de la página de la aplicación.
+
+    Returns:
+        None
+    """
+    
     page.title = "EKLIPSE - Sistema de Información de Compras y Reposiciones"
     page.window_width = 1000
     page.window_height = 600
