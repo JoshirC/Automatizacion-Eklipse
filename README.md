@@ -15,4 +15,4 @@ Este proyecto esta enfocado en manejar las plantillas de los productos y/o repos
 - Flet ( https://flet.dev )
 
 ### Manual de uso
-Aqui ira el pdf con el manual
+[Manual de uso Automatización Eklipse.pdf](https://github.com/JoshirC/Automatizacion-Eklipse/files/14615390/Manual.de.uso.Automatizacion.Eklipse.pdf)
