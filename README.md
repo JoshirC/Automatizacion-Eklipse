@@ -20,4 +20,3 @@ Este proyecto esta enfocado en manejar las plantillas de los productos y/o repos
 ### Generar Aplicación
 Una vez que hayas descargado la carpeta y hayas instalado las librerías necesarias, para generar la aplicación debes ejecutar el siguiente comando:
 - flet pack app.py --add-data "assets;assets" --icon assets\logoapp.png  --name Automatizacion_EKL
-Para obtener más información, consulta la documentación de Flet.
