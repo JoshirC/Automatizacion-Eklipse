@@ -14,6 +14,12 @@ Este proyecto esta enfocado en manejar las plantillas de los productos y/o repos
 ### Entorno de desarrollo
 - Flet ( https://flet.dev )
 
+### Instalaciones necesarias para el desarrollo de la aplicación
+- Python ( python.org/downloads )
+- Flet ( pip install flet )
+- Pandas ( pip install Pandas )
+- PyInstaller ( pip install pyinstaller )
+- Pillow ( pip install Pillow )
 ### Manual de uso
 [Manual de uso Automatización Eklipse.pdf](https://github.com/JoshirC/Automatizacion-Eklipse/files/14615390/Manual.de.uso.Automatizacion.Eklipse.pdf)
 
