@@ -180,8 +180,15 @@ class Consolidado(ft.Container):
             df (DataFrame): DataFrame de consolidado.
         """
         #VARIABLES GLOBALES
-        cat_1 = ["ABARROTES","CONFITERIA","AVES","BEBESTIBLES","CECINAS","CERDO","DESECHABLES","EPP","FRUTAS Y VERDURAS","LÁCTEOS Y HUEVOS","MATERIALES ASEO Y EPP","OTROS NON FOOD","PANADERIA","PANADERÍA Y PASTELERÍA","PESCADOS Y MARISCOS","CECINAS Y EMBUTIDOS","CERDOS","VACUNO","QUÍMICOS","HUEVOS Y LACTEOS"]
-        cat_2 = ['X']
+
+        """
+
+        cat_1: Lista de categorías de productos secos.
+        cat_2: Lista de categorías de productos congelados.
+        
+        """
+        cat_1 = ['ABARROTES','CONFITERIA','BEBESTIBLES','DESECHABLES','EPP','FRUTAS Y VERDURAS','MATERIALES ASEO Y EPP','OTROS NON FOOD','QUÍMICOS']
+        cat_2 = ['AVES','CECINAS','CERDO','LÁCTEOS Y HUEVOS''PANADERIA','PANADERÍA Y PASTELERÍA','PESCADOS Y MARISCOS','CECINAS Y EMBUTIDOS','CERDOS','VACUNO','HUEVOS Y LACTEOS','X']
 
         #MODELADO DE DATAFRAME
         df['FAMILIA'] = df['FAMILIA'].fillna('X')
